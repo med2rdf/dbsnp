@@ -1,0 +1,80 @@
+PATH
+  remote: .
+  specs:
+    dbsnp-rdf (0.1.0)
+      activesupport (~> 5.1)
+      nokogiri (~> 1.8)
+      rdf-turtle (~> 2.2)
+      rdf-vocab (~> 2.2)
+      ruby-progressbar (~> 1.9)
+
+GEM
+  remote: https://rubygems.org/
+  specs:
+    activesupport (5.1.4)
+      concurrent-ruby (~> 1.0, >= 1.0.2)
+      i18n (~> 0.7)
+      minitest (~> 5.1)
+      tzinfo (~> 1.1)
+    awesome_print (1.8.0)
+    coderay (1.1.2)
+    concurrent-ruby (1.0.5)
+    diff-lcs (1.3)
+    ebnf (1.1.2)
+      rdf (>= 2.2, < 4.0)
+      sxp (~> 1.0)
+    hamster (3.0.0)
+      concurrent-ruby (~> 1.0)
+    i18n (0.9.1)
+      concurrent-ruby (~> 1.0)
+    link_header (0.0.8)
+    method_source (0.9.0)
+    mini_portile2 (2.3.0)
+    minitest (5.10.3)
+    nokogiri (1.8.1)
+      mini_portile2 (~> 2.3.0)
+    pry (0.11.3)
+      coderay (~> 1.1.0)
+      method_source (~> 0.9.0)
+    rake (10.5.0)
+    rdf (2.2.12)
+      hamster (~> 3.0)
+      link_header (~> 0.0, >= 0.0.8)
+    rdf-turtle (2.2.2)
+      ebnf (~> 1.1)
+      rdf (>= 2.2, < 4.0)
+    rdf-vocab (2.2.9)
+      rdf (>= 2.2, < 4.0)
+    rspec (3.7.0)
+      rspec-core (~> 3.7.0)
+      rspec-expectations (~> 3.7.0)
+      rspec-mocks (~> 3.7.0)
+    rspec-core (3.7.0)
+      rspec-support (~> 3.7.0)
+    rspec-expectations (3.7.0)
+      diff-lcs (>= 1.2.0, < 2.0)
+      rspec-support (~> 3.7.0)
+    rspec-mocks (3.7.0)
+      diff-lcs (>= 1.2.0, < 2.0)
+      rspec-support (~> 3.7.0)
+    rspec-support (3.7.0)
+    ruby-progressbar (1.9.0)
+    sxp (1.0.1)
+      rdf (>= 2.2, < 4.0)
+    thread_safe (0.3.6)
+    tzinfo (1.2.4)
+      thread_safe (~> 0.1)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  awesome_print (~> 1.8)
+  bundler (~> 1.16)
+  dbsnp-rdf!
+  pry
+  rake (~> 10.0)
+  rspec (~> 3.0)
+
+BUNDLED WITH
+   1.16.0
