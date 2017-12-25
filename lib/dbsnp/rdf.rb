@@ -1,7 +1,10 @@
-require "dbsnp/rdf/version"
+require 'dbsnp/rdf/version'
 
 module Dbsnp
-  module Rdf
-    # Your code goes here...
+  module RDF
+    module CLI
+      autoload :Convert, 'dbsnp/rdf/cli/convert'
+      autoload :Runner, 'dbsnp/rdf/cli/runner'
+    end
   end
 end
