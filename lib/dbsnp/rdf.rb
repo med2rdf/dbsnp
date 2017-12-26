@@ -6,5 +6,14 @@ module Dbsnp
       autoload :Convert, 'dbsnp/rdf/cli/convert'
       autoload :Runner, 'dbsnp/rdf/cli/runner'
     end
+
+    module Models
+      autoload :Allele, 'dbsnp/rdf/models/allele'
+      autoload :Base, 'dbsnp/rdf/models/base'
+      autoload :Build, 'dbsnp/rdf/models/build'
+      autoload :Frequency, 'dbsnp/rdf/models/frequency'
+      autoload :HgvsName, 'dbsnp/rdf/models/hgvs_name'
+      autoload :Report, 'dbsnp/rdf/models/report'
+    end
   end
 end
