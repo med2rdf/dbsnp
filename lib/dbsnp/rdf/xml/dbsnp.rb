@@ -4,16 +4,20 @@ module Dbsnp
   module RDF
     module XML
       class Dbsnp < Nokogiri::XML::SAX::Document
-        def initialize(&block)
-          @callback = block
+        def initialize(find_existing_entry = true, &block)
+          @find_existing_entry = find_existing_entry
+          @callback            = block
 
           @stack      = []
           @characters = ''
 
-          @ref_allele  = []
-          @builds      = []
+          @ref_allele = []
+          @builds     = []
+          @hgvs       = []
 
           @skip = false
+
+          @logger = Importer.logger
         end
 
         def start_element(name, attributes = [])
@@ -22,16 +26,25 @@ module Dbsnp
           return if @skip
 
           @characters = ''
-          attr = attributes.to_h
+          attr        = attributes.to_h
 
           case name
           when 'Rs'
-            @ref_allele = []
+            @ref_allele  = []
+            @builds      = []
+            @hgvs        = []
+            @report      = nil
+            @found_entry = false
 
             # TODO: handle all classes
-            @skip = attr['snpClass'] != 'snp'
+            @skip = (attr['snpClass'] != 'snp')
 
-            @report = Models::Report.new do |r|
+            if @find_existing_entry && (e = Models::Report.find_by(rs: attr['rsId'].to_i))
+              puts 'found'
+              @report      = e
+              @found_entry = true
+            end
+            @report ||= Models::Report.new do |r|
               r[:rs]        = attr['rsId'].to_i
               r[:snp_class] = attr['snpClass']
               r[:snp_type]  = attr['snpType']
@@ -51,10 +64,12 @@ module Dbsnp
               @build[:position] = attr['physMapInt'].to_i + 1
             end
           when 'Frequency'
-            @report.frequencies << Models::Frequency.new do |r|
-              r[:frequency]   = attr['freq'].to_f
-              r[:allele]      = attr['allele']
-              r[:sample_size] = attr['sampleSize'].to_i
+            unless @found_entry
+              @report.frequencies << Models::Frequency.new do |r|
+                r[:frequency]   = attr['freq'].to_f
+                r[:allele]      = attr['allele']
+                r[:sample_size] = attr['sampleSize'].to_i
+              end
             end
           end
         end
@@ -62,33 +77,37 @@ module Dbsnp
         def end_element(name, attributes = [])
           raise unless name == @stack.pop
 
-          return if @skip && name != 'Rs'
+          if @skip && name != 'Rs'
+            return
+          end
 
           case name
           when 'Rs'
-            if @skip
-              @callback.call(nil)
-            else
-              check_cardinary
-
-              @report.alleles = make_alleles
-              @report.builds  = @builds
-
-              @callback.call(@report)
-            end
-
             @skip = false
+
+            unless @found_entry
+              return unless check_cardinary
+              @report.alleles.push(*make_alleles)
+            end
+            @report.builds.push(*@builds)
+
+            @callback.call(@report)
           when 'Component'
             return unless @stack[-1] == 'Assembly'
 
             @builds << @build
           when 'hgvs'
-            @report.hgvs_names << Models::HgvsName.new do |r|
-              r[:name] = @characters.strip
+            unless @found_entry
+              @hgvs << @characters.strip
+              @report.hgvs_names << Models::HgvsName.new do |r|
+                r[:name] = @characters.strip
+              end
             end
           when 'ClinicalSignificance'
-            @report.significances << Models::Significance.new do |r|
-              r[:name] = @characters.strip
+            unless @found_entry
+              @report.significances << Models::Significance.new do |r|
+                r[:name] = @characters.strip
+              end
             end
           end
         end
@@ -102,14 +121,20 @@ module Dbsnp
         private
 
         def check_cardinary
-          raise("rs#{@report[:rs]}: reference allele must be one, but #{@ref_allele}") unless @ref_allele.uniq.size == 1
+          unless @ref_allele.uniq.size == 1
+            if @logger
+              @logger.warn("rs#{@report[:rs]}: reference allele must be one, but #{@ref_allele}")
+            end
+            return false
+          end
+
+          true
         end
 
         def make_alleles
           case @report[:snp_class]
           when 'snp'
-            @report.hgvs_names
-              .map { |s| (g = s[:name].match('>([ATGC]+)')) ? g[1] : nil }
+            @hgvs.map { |s| (g = s.match('NC_[0-9\.]+:g\.\d+[ATGC]+>([ATGC]+)')) ? g[1] : nil }
               .compact
               .uniq
               .map do |alt|
@@ -119,7 +144,8 @@ module Dbsnp
               end
             end
           else
-            raise("rs#{@report[:rs]}: unknown/unhandleable SNP class '#{@report[:snp_class]}'")
+            @logger.warn("rs#{@report[:rs]}: unknown/unhandleable SNP class '#{@report[:snp_class]}'")
+            []
           end
         end
       end

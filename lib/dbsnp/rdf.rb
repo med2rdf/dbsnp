@@ -23,6 +23,7 @@ module Dbsnp
 
     module XML
       autoload :Dbsnp, 'dbsnp/rdf/xml/dbsnp'
+      autoload :Importer, 'dbsnp/rdf/xml/importer'
     end
   end
 end

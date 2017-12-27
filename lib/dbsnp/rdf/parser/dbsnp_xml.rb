@@ -39,6 +39,8 @@ module Dbsnp
 
         def initialize(data, options)
           @io = data.respond_to?(:read) && data.respond_to?(:close) ? data : StringIO(data)
+
+          @find_existing_entry = options[:find_existing_entry]
         end
 
         extend Forwardable
@@ -50,7 +52,7 @@ module Dbsnp
                        :to_io, :truncate, :tty?
 
         def parse(&block)
-          Nokogiri::XML::SAX::Parser.new(XML::Dbsnp.new(&block)).parse(@io)
+          Nokogiri::XML::SAX::Parser.new(Dbsnp::RDF::XML::Dbsnp.new(@find_existing_entry, &block)).parse(@io)
         end
 
         def each(&block)
