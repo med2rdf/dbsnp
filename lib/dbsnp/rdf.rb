@@ -16,6 +16,13 @@ module Dbsnp
       autoload :Report, 'dbsnp/rdf/models/report'
       autoload :Significance, 'dbsnp/rdf/models/significance'
     end
+
+    module Parser
+      autoload :DbsnpXML, 'dbsnp/rdf/parser/dbsnp_xml'
+    end
+
+    module XML
+      autoload :Dbsnp, 'dbsnp/rdf/xml/dbsnp'
     end
   end
 end
