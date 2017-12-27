@@ -4,7 +4,7 @@ module Dbsnp
   module RDF
     module Models
       class Frequency < Base
-        belongs_to :allele
+        belongs_to :report
       end
     end
   end

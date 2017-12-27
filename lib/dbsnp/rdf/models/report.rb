@@ -5,8 +5,10 @@ module Dbsnp
     module Models
       class Report < Base
         has_many :alleles
-        has_many :hgvs_names
         has_many :builds
+        has_many :frequencies
+        has_many :hgvs_names
+        has_many :significances
 
         validates :snp_class,
                   inclusion: { in: %w[snp in-del heterozygous microsatellite

@@ -33,8 +33,6 @@ module Dbsnp
               t.column :mol_type, :string, null: false
 
               t.column :tax, :integer, null: false
-
-              t.column :significance, :string
             end
 
             create_table :alleles do |t|
@@ -53,11 +51,16 @@ module Dbsnp
             create_table :builds do |t|
               t.column :report_id, :integer, null: false
               t.column :chr, :integer, null: false
-              t.column :position, :string, null: false
+              t.column :position, :integer, null: false
               t.column :refseq, :string, null: false
             end
 
             create_table :hgvs_names do |t|
+              t.column :report_id, :integer, null: false
+              t.column :name, :string
+            end
+
+            create_table :significances do |t|
               t.column :report_id, :integer, null: false
               t.column :name, :string
             end

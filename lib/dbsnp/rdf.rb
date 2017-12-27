@@ -14,6 +14,8 @@ module Dbsnp
       autoload :Frequency, 'dbsnp/rdf/models/frequency'
       autoload :HgvsName, 'dbsnp/rdf/models/hgvs_name'
       autoload :Report, 'dbsnp/rdf/models/report'
+      autoload :Significance, 'dbsnp/rdf/models/significance'
+    end
     end
   end
 end

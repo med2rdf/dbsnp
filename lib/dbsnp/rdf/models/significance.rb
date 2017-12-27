@@ -3,7 +3,7 @@ require 'dbsnp/rdf/models/base'
 module Dbsnp
   module RDF
     module Models
-      class Allele < Base
+      class Significance < Base
         belongs_to :report
       end
     end
