@@ -38,10 +38,10 @@ module Dbsnp::Rdf::Parser
         tokens = line.split(DELIMITER).map(&:strip)
         case tokens[0]
         when /^rs/
-          rs = Rs.new
-          rs.rs_id = tokens[0]
+          rs             = Rs.new
+          rs.rs_id       = tokens[0]
           rs.taxonomy_id = tokens[2].match(/\d+/) { |m| m[0] }
-          rs.snp_class = tokens[3]
+          rs.snp_class   = tokens[3]
           raise FormatError.new(line) if rs.any?(&:nil?)
           refsnp.rs << Rs.new(tokens[0], tokens[2], tokens[3])
         when /^SNP/
@@ -51,27 +51,27 @@ module Dbsnp::Rdf::Parser
             raise FormatError.new(line)
           end
         when /^CTG/
-          ctg = Ctg.new
+          ctg             = Ctg.new
           ctg.group_label = tokens[1].match(/^assembly=(.+)$/) { |m| m[1] }
-          ctg.chromosome = tokens[2].match(/^chr=(\d+)$/) { |m| m[1] }
-          ctg.loctype = tokens[7].match(/^loctype=(\d+)$/) { |m| m[1] }
+          ctg.chromosome  = tokens[2].match(/^chr=(\d+)$/) { |m| m[1] }
+          ctg.loctype     = tokens[7].match(/^loctype=(\d+)$/) { |m| m[1] }
           raise FormatError.new(line) if ctg.any?(&:nil?)
           refsnp.ctg << ctg
         when /^GMAF/
-          gmaf = Gmaf.new
-          gmaf.allele = tokens[1].match(/^allele=([\-ATCG])$/) { |m| m[1] }
+          gmaf             = Gmaf.new
+          gmaf.allele      = tokens[1].match(/^allele=([\-ATCG])$/) { |m| m[1] }
           gmaf.sample_size = tokens[2].match(/^count=(\d+)$/) { |m| m[1] }
-          gmaf.freq = tokens[3].match(/^MAF=(\d+\.\d+)$/) { |m| m[1] }
+          gmaf.freq        = tokens[3].match(/^MAF=(\d+\.\d+)$/) { |m| m[1] }
           raise FormatError.new(line) if gmaf.any?(&:nil?)
           refsnp.gmaf << gmaf
         when /^LOC/
-          loc = Loc.new
-          loc.locus_id = tokens[2].match(/^locus_id=(\d+)$/) { |m| m[1] }
+          loc                  = Loc.new
+          loc.locus_id         = tokens[2].match(/^locus_id=(\d+)$/) { |m| m[1] }
           loc.functional_class = tokens[3].match(/^fxn-class=(.+)$/) { |m| m[1] }
           raise FormatError.new(line) if loc.any?(&:nil?)
           refsnp.loc << loc
         when /^CLINSIG/
-          clinsig = Clinsig.new
+          clinsig           = Clinsig.new
           clinsig.assertion = tokens[1].match(/^assertion=(.+)$/) { |m| m[1] }
           raise FormatError.new(line) if clinsig.any?(&:nil?)
           refsnp.clinsig << clinsig
@@ -84,6 +84,5 @@ module Dbsnp::Rdf::Parser
       end
       refsnp
     end
-
   end
 end

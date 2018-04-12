@@ -133,38 +133,38 @@ module Dbsnp::Rdf::Parser
 
       context 'for invalid header' do
         let(:text) { "INVALID | alleles='A/G' | het=0 | se(het)=0" }
-        it { expect{ subject }.to raise_error(EntryParser::FormatError) }
+        it { expect { subject }.to raise_error(EntryParser::FormatError) }
       end
 
       context 'for invalid rs' do
         let(:text) { 'rs171 | human | INVALID_TAX_ID | snp | genotype=YES | submitterlink=YES | updated 2016-10-18 16:48' }
-        it { expect{ subject }.to raise_error(EntryParser::FormatError) }
+        it { expect { subject }.to raise_error(EntryParser::FormatError) }
       end
 
       context 'for invalid SNP' do
         let(:text) { "SNP | alleles='INVALID/INVALID' | het=0 | se(het)=0" }
-        it { expect{ subject }.to raise_error(EntryParser::FormatError) }
+        it { expect { subject }.to raise_error(EntryParser::FormatError) }
       end
 
       context 'for invalid CTG' do
         let(:text) { 'CTG | assembly_INVALID=GRCh38.p7 | chr=1 | chr-pos=175292543 | NT_004487.20 | ctg-start=32107956 | ctg-end=32107956 | loctype=2 | orient=-' }
-        it { expect{ subject }.to raise_error(EntryParser::FormatError) }
+        it { expect { subject }.to raise_error(EntryParser::FormatError) }
       end
 
       context 'for invalid GMAF' do
         let(:text) { 'GMAF | allele=T | count=INVALID | MAF=0.000998403' }
-        it { expect{ subject }.to raise_error(EntryParser::FormatError) }
+        it { expect { subject }.to raise_error(EntryParser::FormatError) }
       end
 
       context 'for invalid LOC' do
         let(:text) { 'LOC | FUCA1 | locus_id=INVALID | fxn-class=missense | allele=A | frame=1 | residue=I | aa_position=260 | mrna_acc=NM_000147.4 | prot_acc=NP_000138.2
 ' }
-        it { expect{ subject }.to raise_error(EntryParser::FormatError) }
+        it { expect { subject }.to raise_error(EntryParser::FormatError) }
       end
 
       context 'for invalid CLINSIG' do
         let(:text) { 'CLINSIG | INVALID=Likely benign' }
-        it { expect{ subject }.to raise_error(EntryParser::FormatError) }
+        it { expect { subject }.to raise_error(EntryParser::FormatError) }
       end
     end
   end
