@@ -18,12 +18,7 @@ module Dbsnp
     end
 
     module Parser
-      autoload :DbsnpXML, 'dbsnp/rdf/parser/dbsnp_xml'
-    end
-
-    module XML
-      autoload :Dbsnp, 'dbsnp/rdf/xml/dbsnp'
-      autoload :Importer, 'dbsnp/rdf/xml/importer'
+      autoload :EntryParser, 'dbsnp/rdf/parser/entry_parser'
     end
   end
 end
