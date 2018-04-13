@@ -1,4 +1,6 @@
-require 'dbsnp/rdf/version'
+require "dbsnp/rdf/version"
+require 'rdf'
+require 'rdf/vocab'
 
 module Dbsnp
   module RDF
@@ -17,8 +19,32 @@ module Dbsnp
       autoload :Significance, 'dbsnp/rdf/models/significance'
     end
 
+    PREFIXES = {
+        snpo:      'http://purl.jp/bio/10/dbsnp/',
+        m2r:       'http://med2rdf.org/ontology/med2rdf#',
+        dbsnp:     'http://identifiers.org/dbsnp/',
+        ncbi_gene: 'http://identifiers.org/ncbigene/',
+        refseq:    'http://identifiers.org/refseq/',
+        tax:       'http://identifiers.org/taxonomy/',
+        obo:       'http://purl.obolibrary.org/obo/',
+        faldo:     'http://biohackathon.org/resource/faldo#',
+        rdf:       ::RDF::RDFV.to_s,
+        dc:        ::RDF::Vocab::DC.to_s,
+        xsd:       ::RDF::XSD.to_s,
+    }.freeze
+
+    module Converter
+      autoload :RefsnpToTriples, 'dbsnp/rdf/converter/refsnp_to_triples'
+    end
+
     module Parser
       autoload :EntryParser, 'dbsnp/rdf/parser/entry_parser'
+    end
+
+    module Vocabularies
+      autoload :M2r, 'dbsnp/rdf/vocabularies'
+      autoload :Obo, 'dbsnp/rdf/vocabularies'
+      autoload :Dbsnp, 'dbsnp/rdf/vocabularies'
     end
   end
 end
