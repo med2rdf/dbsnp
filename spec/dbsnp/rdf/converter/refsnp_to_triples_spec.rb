@@ -60,9 +60,8 @@ module Dbsnp::Rdf::Converter
                                                     Dbsnp::Rdf::Vocabularies::M2r.alternative_allele,
                                                     'G'))
 
-          is_expected.to include(RDF::Statement.new(refsnp_part_uri,
-                                                    Dbsnp::Rdf::Vocabularies::M2r.alternative_allele,
-                                                    'G'))
+
+
         end
       end
     end

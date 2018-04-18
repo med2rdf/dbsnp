@@ -39,6 +39,7 @@ module Dbsnp
 
     module Parser
       autoload :EntryParser, 'dbsnp/rdf/parser/entry_parser'
+      autoload :VcfParser, 'dbsnp/rdf/parser/vcf_parser'
     end
 
     module Vocabularies
