@@ -2,22 +2,9 @@ require "dbsnp/rdf/version"
 require 'rdf'
 require 'rdf/vocab'
 
-module Dbsnp
+module DbSNP
   module RDF
-    module CLI
-      autoload :Convert, 'dbsnp/rdf/cli/convert'
-      autoload :Runner, 'dbsnp/rdf/cli/runner'
-    end
-
-    module Models
-      autoload :Allele, 'dbsnp/rdf/models/allele'
-      autoload :Base, 'dbsnp/rdf/models/base'
-      autoload :Build, 'dbsnp/rdf/models/build'
-      autoload :Frequency, 'dbsnp/rdf/models/frequency'
-      autoload :HgvsName, 'dbsnp/rdf/models/hgvs_name'
-      autoload :Report, 'dbsnp/rdf/models/report'
-      autoload :Significance, 'dbsnp/rdf/models/significance'
-    end
+    ROOT_DIR = File.expand_path('../../', File.dirname(__FILE__)).freeze
 
     PREFIXES = {
         snpo:      'http://purl.jp/bio/10/dbsnp/',
@@ -33,7 +20,7 @@ module Dbsnp
         xsd:       ::RDF::XSD.to_s,
     }.freeze
 
-    module Cli
+    module CLI
       autoload :Runner, 'dbsnp/rdf/cli/runner'
     end
 
@@ -48,7 +35,7 @@ module Dbsnp
     module Vocabularies
       autoload :M2r, 'dbsnp/rdf/vocabularies'
       autoload :Obo, 'dbsnp/rdf/vocabularies'
-      autoload :Dbsnp, 'dbsnp/rdf/vocabularies'
+      autoload :DbSNP, 'dbsnp/rdf/vocabularies'
     end
   end
 end

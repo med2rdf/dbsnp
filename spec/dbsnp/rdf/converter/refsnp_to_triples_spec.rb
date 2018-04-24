@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-module Dbsnp::Rdf
+module DbSNP::RDF
   module Converter
     RSpec.describe RefsnpToTriples do
       it { expect(RefsnpToTriples).to respond_to(:convert).with(1).argument }
@@ -44,7 +44,7 @@ module Dbsnp::Rdf
                                                       "rs171"))
 
             is_expected.to include(RDF::Statement.new(refsnp_part_uri,
-                                                      Vocabularies::Dbsnp.taxonomy,
+                                                      Vocabularies::DbSNP.taxonomy,
                                                       RDF::URI.new(prefixes[:tax] + '9606')))
 
             is_expected.to include(RDF::Statement.new(refsnp_part_uri,
@@ -115,7 +115,7 @@ module Dbsnp::Rdf
                                                         "rs242"))
 
               is_expected.to include(RDF::Statement.new(refsnp_part_uri,
-                                                        Vocabularies::Dbsnp.taxonomy,
+                                                        Vocabularies::DbSNP.taxonomy,
                                                         RDF::URI.new(prefixes[:tax] + '9606')))
 
               is_expected.to include(RDF::Statement.new(refsnp_part_uri,
@@ -200,7 +200,7 @@ module Dbsnp::Rdf
                                                           "rs538"))
 
                 is_expected.to include(RDF::Statement.new(refsnp_part_uri,
-                                                          Vocabularies::Dbsnp.taxonomy,
+                                                          Vocabularies::DbSNP.taxonomy,
                                                           RDF::URI.new(prefixes[:tax] + '9606')))
 
                 is_expected.to include(RDF::Statement.new(refsnp_part_uri,

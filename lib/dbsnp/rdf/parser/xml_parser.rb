@@ -1,6 +1,6 @@
 require 'rexml/parsers/pullparser'
 
-module Dbsnp::Rdf::Parser
+module DbSNP::RDF::Parser
   class XmlParser
     include Enumerable
 

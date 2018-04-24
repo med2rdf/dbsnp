@@ -1,7 +1,7 @@
 require 'rdf'
 require 'rdf/vocab'
 
-module Dbsnp::Rdf
+module DbSNP::RDF
   module Vocabularies
     class M2r < RDF::StrictVocabulary(PREFIXES[:m2r])
       term :Variation
@@ -33,7 +33,7 @@ module Dbsnp::Rdf
       property :reference
     end
 
-    class Dbsnp < RDF::StrictVocabulary(PREFIXES[:dbsnp])
+    class DbSNP < RDF::StrictVocabulary(PREFIXES[:dbsnp])
       term(:RefSnp,
            type:        RDF::OWL.Class,
            label:       'refSNP',

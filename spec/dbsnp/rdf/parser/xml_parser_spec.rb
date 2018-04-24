@@ -1,14 +1,14 @@
 require 'spec_helper'
 
 
-module Dbsnp::Rdf::Parser
+module DbSNP::RDF::Parser
   RSpec.describe XmlParser do
     it { expect(XmlParser.new('text')).to respond_to(:each) }
 
     describe '#parse' do
       let(:subject) { XmlParser.open(text) }
       context 'for 171_242_538.xml' do
-        let(:text) { File.join(Dbsnp::Rdf::ROOT_DIR, 'spec', 'examples', 'xml', '171_242_538.xml') }
+        let(:text) { File.join(DbSNP::RDF::ROOT_DIR, 'spec', 'examples', 'xml', '171_242_538.xml') }
 
         it { is_expected.to be_a(XmlParser) }
 
@@ -53,7 +53,7 @@ module Dbsnp::Rdf::Parser
       end
 
       context 'for 665.xml' do
-        let(:text) { File.join(Dbsnp::Rdf::ROOT_DIR, 'spec', 'examples', 'xml', '665.xml') }
+        let(:text) { File.join(DbSNP::RDF::ROOT_DIR, 'spec', 'examples', 'xml', '665.xml') }
 
         it { is_expected.to be_a(XmlParser) }
 

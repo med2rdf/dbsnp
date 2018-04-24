@@ -1,6 +1,6 @@
 require 'rdf'
 
-module Dbsnp::Rdf
+module DbSNP::RDF
   module Converter
 
     HGVS_PATTERN = /^(.+):.\.(\d+)([[:alpha:]>]+)$/
@@ -62,7 +62,7 @@ module Dbsnp::Rdf
                                              rs_id)
 
             statements << RDF::Statement.new(part,
-                                             Vocabularies::Dbsnp.taxonomy,
+                                             Vocabularies::DbSNP.taxonomy,
                                              RDF::URI.new(PREFIXES[:tax] + '9606'))
 
             if refsnp.gene_id
