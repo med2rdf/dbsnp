@@ -20,6 +20,8 @@ module Dbsnp::Rdf
 
     class Snpo < RDF::StrictVocabulary(PREFIXES[:snpo])
       property :hgvs
+      property :frequency
+      property :sample_size
       property :clinical_significance
     end
 
