@@ -4,10 +4,10 @@ require 'active_support/core_ext/string/strip'
 require 'active_support/inflector'
 
 module Dbsnp
-  module RDF
-    module CLI
+  module Rdf
+    module Cli
 
-      PROG_NAME = 'dbsnp'.freeze
+      PROG_NAME = 'dbsnp-rdf'.freeze
 
       class Runner
         def run
@@ -15,11 +15,11 @@ module Dbsnp
 
           case command
           when '-v', '--version'
-            STDERR.puts Dbsnp::RDF::VERSION
+            STDERR.puts Dbsnp::Rdf::VERSION
           when '-h', '--help'
             STDERR.puts help
           when *commands
-            target = Dbsnp::RDF::CLI.const_get(command.capitalize).new
+            target = Dbsnp::Rdf::CLI.const_get(command.capitalize).new
             target.run if target.respond_to?(:run)
           else
             STDERR.puts "Unknown command: '#{command}'"

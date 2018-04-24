@@ -33,6 +33,10 @@ module Dbsnp
         xsd:       ::RDF::XSD.to_s,
     }.freeze
 
+    module Cli
+      autoload :Runner, 'dbsnp/rdf/cli/runner'
+    end
+
     module Converter
       autoload :RefsnpToTriples, 'dbsnp/rdf/converter/refsnp_to_triples'
     end
