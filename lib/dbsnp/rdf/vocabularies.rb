@@ -16,6 +16,8 @@ module DbSNP::RDF
       term :SO_1000032
       term :SO_0000289
       term :SO_0002007
+      term :SO_0000159
+      term :SO_0000667
     end
 
     class Snpo < RDF::StrictVocabulary(PREFIXES[:snpo])

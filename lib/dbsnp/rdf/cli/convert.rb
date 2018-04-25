@@ -31,7 +31,7 @@ module DbSNP
             file.write(writer.buffer(prefixes: DbSNP::RDF::PREFIXES, stream: true) do |_|
               # just output header
             end)
-            Parser::XmlParser.open(ARGV[0]).each do |refsnp|
+            Parser::VCFParser.open(ARGV[0]).each do |refsnp|
               file.write(writer.buffer(prefixes: DbSNP::RDF::PREFIXES) do |buffer|
                 DbSNP::RDF::Converter::RefsnpToTriples.convert(refsnp).each { |statement| buffer << statement }
               end.gsub(/^@.*$\n/, ''))

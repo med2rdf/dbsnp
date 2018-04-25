@@ -51,11 +51,18 @@ module DbSNP::RDF::Parser
       refsnp.gene_id = additional_information['GENEINFO'].split(':')[1] if additional_information['GENEINFO']
       refsnp.reference_allele = tokens[3]
       refsnp.alternative_alleles = tokens[4].split(',')
-      refsnp.frequency = additional_information['FREQ'].split(',') if additional_information['FREQ']
+      refsnp.frequency = parse_frequency_part(additional_information['FREQ']) if additional_information['FREQ']
       refsnp.reference_sequence = tokens[0]
       refsnp.position = tokens[1]
       refsnp.clinical_significance = additional_information['CLINSIG']
       refsnp
+    end
+
+    def parse_frequency_part(text)
+      from_1000g = text.split('|').select { |t| t.start_with?('1000Genomes')}
+      raise new InvalidFormat(text) if from_1000g.size > 1
+      return nil if from_1000g.empty?
+      from_1000g[0].split(':')[1].split(',')
     end
 
     def parse_additional_part(text)

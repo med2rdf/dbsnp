@@ -13,13 +13,10 @@ module DbSNP::RDF
 
     CLASS_OBO_MAP = {
         'SNV'                          => Vocabularies::Obo.SO_0001483,
-        'INDEL'                       => Vocabularies::Obo.SO_1000032,
-        'heterozygous'                 => nil,
-        'microsatellite'               => Vocabularies::Obo.SO_0000289,
-        'named-locus'                  => Vocabularies::Obo.SO_1000032,
-        'no-variation'                 => nil,
-        'mixed'                        => nil,
-        'multinucleotide-polymorphism' => Vocabularies::Obo.SO_0002007
+        'INDEL'                        => Vocabularies::Obo.SO_1000032,
+        'INS'                          => Vocabularies::Obo.SO_0000667,
+        'DEL'                          => Vocabularies::Obo.SO_0000159,
+        'MNV'                          => Vocabularies::Obo.SO_0002007,
     }
 
     class RefsnpToTriples
@@ -31,7 +28,7 @@ module DbSNP::RDF
 
           subject = RDF::URI.new("#{PREFIXES[:dbsnp]}#{refsnp.id}")
           if refsnp.alternative_alleles.count == 1
-            statements += part_statements(subject, refsnp, refsnp.alternative_alleles[0])
+            statements += part_statements(subject, refsnp, refsnp.alternative_alleles[0], 0)
           else
             statements << RDF::Statement.new(subject,
                                              RDF::Vocab::DC::identifier,
@@ -42,19 +39,19 @@ module DbSNP::RDF
                                              Vocabularies::M2r.Variation)
 
 
-            refsnp.alternative_alleles.each do |alt|
+            refsnp.alternative_alleles.each_with_index do |alt, i|
               part_subject = RDF::URI.new("#{subject}##{refsnp.reference_allele}-#{alt}")
               statements << RDF::Statement.new(subject,
                                                ::RDF::Vocab::DC::hasPart,
-                                               part)
-              statements += part_statements(part_subject, refsnp, alt)
+                                               part_subject)
+              statements += part_statements(part_subject, refsnp, alt, i)
             end
           end
 
           statements
         end
 
-        def part_statements(subject, refsnp, alt)
+        def part_statements(subject, refsnp, alt, idx)
           statements = []
 
           statements << RDF::Statement.new(subject,
@@ -89,9 +86,11 @@ module DbSNP::RDF
                                            Vocabularies::M2r.alternative_allele,
                                            alt)
 
-          statements << RDF::Statement.new(subject,
-                                           Vocabularies::Snpo.frequency,
-                                           refsnp.frequency.to_f)
+          if refsnp.frequency
+            statements << RDF::Statement.new(subject,
+                                             Vocabularies::Snpo.frequency,
+                                             refsnp.frequency[idx + 1].to_f)
+          end
 
           statements << RDF::Statement.new(subject,
                                            Vocabularies::Snpo.hgvs,
@@ -120,33 +119,32 @@ module DbSNP::RDF
           ref = refsnp.reference_allele
           if ref.length == 1 && alt.length == 1
             "#{refsnp.position}#{ref}>#{alt}"
-          elsif ref.length > alt.length
-            raise ValidationError.new(refsnp) unless ref.start_with?(alt)
+          elsif ref.length > alt.length && ref.start_with?(alt)
             start_pos = refsnp.position.to_i + alt.length
-            end_pos = refsnp.position.to_i + ref.length
+            end_pos   = refsnp.position.to_i + ref.length
             if end_pos - start_pos == 1
               "#{start_pos}del#{ref[-1]}"
             else
-              "#{start_pos}_#{end_pos}del#{ref[alt.count..-1]}"
+              "#{start_pos}_#{end_pos}del#{ref[alt.length..-1]}"
             end
-          elsif ref.length < alt.length
-            raise ValidationError.new(refsnp) unless alt.start_with?(ref)
+          elsif ref.length < alt.length && alt.start_with?(ref)
             if repeated_in?(ref, alt)
-              start_pos = refsnp.position
-              end_pos = refsnp.position + ref.length
+              start_pos = refsnp.position.to_i
+              end_pos   = refsnp.position.to_i + ref.length
               if end_pos - start_pos == 1
                 "#{start_pos}dup#{ref[-1]}"
               else
                 "#{start_pos}_#{end_pos}dup#{ref[-1]}"
               end
             else
-              start_pos = refsnp.position + ref.length
-              end_pos = start_pos + 1
-              "#{start_pos}_#{end_pos}ins#{ref[alt.count..-1]}"
+              start_pos = refsnp.position.to_i + ref.length
+              end_pos   = start_pos + 1
+              "#{start_pos}_#{end_pos}ins#{ref[ref.length..-1]}"
             end
           else
-            # delins (not handled)
-            raise ValidationError.new(refsnp) unless alt.start_with?(ref)
+            start_pos = refsnp.position.to_i
+            end_pos   = start_pos + ref.length
+            "#{start_pos}_#{end_pos}delins#{alt}"
           end
         end
 
@@ -162,7 +160,7 @@ module DbSNP::RDF
           idx = 0
           while idx < superstr.length
             return false if substr != superstr[idx, substr.length]
-            idx += substr
+            idx += substr.length
           end
           true
         end

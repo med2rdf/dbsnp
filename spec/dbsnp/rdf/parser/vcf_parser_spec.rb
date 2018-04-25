@@ -31,6 +31,8 @@ module DbSNP::RDF::Parser
         end
       end
 
+      # NC_000001.10	63738	rs869033224	ACT	CTA	.	.	RS=869033224;dbSNPBuildID=147;SSR=0;VC=MNV
+
 
       context 'for comment lines' do
         let(:text) { "#these \n# are \n# comments\n" }
