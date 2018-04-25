@@ -12,8 +12,8 @@ module DbSNP::RDF
     end
 
     CLASS_OBO_MAP = {
-        'snp'                          => Vocabularies::Obo.SO_0001483,
-        'in-del'                       => Vocabularies::Obo.SO_1000032,
+        'SNV'                          => Vocabularies::Obo.SO_0001483,
+        'INDEL'                       => Vocabularies::Obo.SO_1000032,
         'heterozygous'                 => nil,
         'microsatellite'               => Vocabularies::Obo.SO_0000289,
         'named-locus'                  => Vocabularies::Obo.SO_1000032,
@@ -29,134 +29,146 @@ module DbSNP::RDF
 
           raise ValidationError.new(refsnp) unless validate(refsnp)
 
-          rs_id = 'rs' + refsnp.id
+          subject = RDF::URI.new("#{PREFIXES[:dbsnp]}#{refsnp.id}")
+          if refsnp.alternative_alleles.count == 1
+            statements += part_statements(subject, refsnp, refsnp.alternative_alleles[0])
+          else
+            statements << RDF::Statement.new(subject,
+                                             RDF::Vocab::DC::identifier,
+                                             refsnp.id)
 
-          subject = RDF::URI.new("#{PREFIXES[:dbsnp]}#{rs_id}")
+            statements << RDF::Statement.new(subject,
+                                             ::RDF::type,
+                                             Vocabularies::M2r.Variation)
+
+
+            refsnp.alternative_alleles.each do |alt|
+              part_subject = RDF::URI.new("#{subject}##{refsnp.reference_allele}-#{alt}")
+              statements << RDF::Statement.new(subject,
+                                               ::RDF::Vocab::DC::hasPart,
+                                               part)
+              statements += part_statements(part_subject, refsnp, alt)
+            end
+          end
+
+          statements
+        end
+
+        def part_statements(subject, refsnp, alt)
+          statements = []
 
           statements << RDF::Statement.new(subject,
                                            RDF::Vocab::DC::identifier,
-                                           rs_id)
+                                           refsnp.id)
 
           statements << RDF::Statement.new(subject,
                                            ::RDF::type,
                                            Vocabularies::M2r.Variation)
 
-          refsnp_hash(refsnp).each do |part, hgvs_list|
-
+          unless CLASS_OBO_MAP[refsnp.variation_class].nil?
             statements << RDF::Statement.new(subject,
-                                             ::RDF::Vocab::DC::hasPart,
-                                             part)
-
-            statements << RDF::Statement.new(part,
                                              ::RDF::type,
-                                             Vocabularies::M2r.Variation)
-
-            unless CLASS_OBO_MAP[refsnp.snp_type].nil?
-              statements << RDF::Statement.new(part,
-                                               ::RDF::type,
-                                               CLASS_OBO_MAP[refsnp.snp_type])
-            end
-
-            statements << RDF::Statement.new(part,
-                                             RDF::Vocab::DC::identifier,
-                                             rs_id)
-
-            statements << RDF::Statement.new(part,
-                                             Vocabularies::DbSNP.taxonomy,
-                                             RDF::URI.new(PREFIXES[:tax] + '9606'))
-
-            if refsnp.gene_id
-              statements << RDF::Statement.new(part,
-                                               Vocabularies::M2r.gene,
-                                               RDF::URI.new(PREFIXES[:ncbi_gene] + refsnp.gene_id))
-            end
-
-            statements << RDF::Statement.new(part,
-                                             Vocabularies::M2r.reference_allele,
-                                             ref_allele(hgvs_list[0]))
-
-            statements << RDF::Statement.new(part,
-                                             Vocabularies::M2r.alternative_allele,
-                                             alt_allele(hgvs_list[0]))
-
-            statements << RDF::Statement.new(part,
-                                             Vocabularies::Snpo.frequency,
-                                             refsnp.frequency.to_f)
-
-            statements << RDF::Statement.new(part,
-                                             Vocabularies::Snpo.sample_size,
-                                             refsnp.sample_size.to_i)
-
-            hgvs_list.each do |hgvs|
-              statements << RDF::Statement.new(part,
-                                               Vocabularies::Snpo.hgvs,
-                                               hgvs)
-
-              location_node = RDF::Node.new
-              statements << RDF::Statement.new(part,
-                                               Vocabularies::Faldo.location,
-                                               location_node)
-
-              statements << RDF::Statement.new(location_node,
-                                               Vocabularies::Faldo.position,
-                                               hgvs_position(hgvs))
-
-              statements << RDF::Statement.new(location_node,
-                                               RDF::type,
-                                               Vocabularies::Faldo.ExactPosition)
-
-              statements << RDF::Statement.new(location_node,
-                                               Vocabularies::Faldo.reference,
-                                               RDF::URI.new(PREFIXES[:refseq] + hgvs_refseq(hgvs)))
-            end
+                                             CLASS_OBO_MAP[refsnp.variation_class])
           end
 
+          statements << RDF::Statement.new(subject,
+                                           Vocabularies::DbSNP.taxonomy,
+                                           RDF::URI.new(PREFIXES[:tax] + '9606'))
+
+          if refsnp.gene_id
+            statements << RDF::Statement.new(subject,
+                                             Vocabularies::M2r.gene,
+                                             RDF::URI.new(PREFIXES[:ncbi_gene] + refsnp.gene_id))
+          end
+
+          statements << RDF::Statement.new(subject,
+                                           Vocabularies::M2r.reference_allele,
+                                           refsnp.reference_allele)
+
+          statements << RDF::Statement.new(subject,
+                                           Vocabularies::M2r.alternative_allele,
+                                           alt)
+
+          statements << RDF::Statement.new(subject,
+                                           Vocabularies::Snpo.frequency,
+                                           refsnp.frequency.to_f)
+
+          statements << RDF::Statement.new(subject,
+                                           Vocabularies::Snpo.hgvs,
+                                           "#{refsnp.reference_sequence}:g.#{hgvs_change(refsnp, alt)}")
+
+          location_node = RDF::Node.new
+          statements << RDF::Statement.new(subject,
+                                           Vocabularies::Faldo.location,
+                                           location_node)
+
+          statements << RDF::Statement.new(location_node,
+                                           Vocabularies::Faldo.position,
+                                           refsnp.position.to_i)
+
+          statements << RDF::Statement.new(location_node,
+                                           RDF::type,
+                                           Vocabularies::Faldo.ExactPosition)
+
+          statements << RDF::Statement.new(location_node,
+                                           Vocabularies::Faldo.reference,
+                                           RDF::URI.new(PREFIXES[:refseq] + refsnp.reference_sequence))
           statements
-
         end
 
-        def refsnp_hash(refsnp)
-          hgvs_chromosome(refsnp).group_by do |nc|
-            RDF::URI.new("#{PREFIXES[:dbsnp]}rs#{refsnp.id}##{hgvs_change(nc).gsub(/>/, '-')}")
-          end
-        end
-
-        def ref_allele(hgvs)
-          change = hgvs_change(hgvs)
-          if change.include?('del')
-            change.match(/del(.+)/)[1]
+        def hgvs_change(refsnp, alt)
+          ref = refsnp.reference_allele
+          if ref.length == 1 && alt.length == 1
+            "#{refsnp.position}#{ref}>#{alt}"
+          elsif ref.length > alt.length
+            raise ValidationError.new(refsnp) unless ref.start_with?(alt)
+            start_pos = refsnp.position.to_i + alt.length
+            end_pos = refsnp.position.to_i + ref.length
+            if end_pos - start_pos == 1
+              "#{start_pos}del#{ref[-1]}"
+            else
+              "#{start_pos}_#{end_pos}del#{ref[alt.count..-1]}"
+            end
+          elsif ref.length < alt.length
+            raise ValidationError.new(refsnp) unless alt.start_with?(ref)
+            if repeated_in?(ref, alt)
+              start_pos = refsnp.position
+              end_pos = refsnp.position + ref.length
+              if end_pos - start_pos == 1
+                "#{start_pos}dup#{ref[-1]}"
+              else
+                "#{start_pos}_#{end_pos}dup#{ref[-1]}"
+              end
+            else
+              start_pos = refsnp.position + ref.length
+              end_pos = start_pos + 1
+              "#{start_pos}_#{end_pos}ins#{ref[alt.count..-1]}"
+            end
           else
-            change.match(/(.+)>(.+)/)[1]
+            # delins (not handled)
+            raise ValidationError.new(refsnp) unless alt.start_with?(ref)
           end
         end
 
-        def alt_allele(hgvs)
-          change = hgvs_change(hgvs)
-          if change.include?('del')
-            '-'
-          else
-            change.match(/(.+)>(.+)/)[2]
+        def common_prefix(str_a, str_b)
+          idx = 0
+          while idx < str_a.length && idx < str_b.length && str_a[idx] == str_b[idx]
+            idx += 1
           end
+          str_a.length < str_b.length ? str_a[0..idx] : str_b[0..idx]
         end
 
-        def hgvs_chromosome(refsnp)
-          refsnp.hgvs.select { |hgvs| hgvs.start_with?('NC_') }
-        end
-
-        def hgvs_change(hgvs)
-          hgvs.match(HGVS_PATTERN)[3]
-        end
-
-        def hgvs_position(hgvs)
-          hgvs.match(HGVS_PATTERN)[2].to_i
-        end
-
-        def hgvs_refseq(hgvs)
-          hgvs.match(HGVS_PATTERN)[1]
+        def repeated_in?(substr, superstr)
+          idx = 0
+          while idx < superstr.length
+            return false if substr != superstr[idx, substr.length]
+            idx += substr
+          end
+          true
         end
 
         def validate(refsnp)
-          CLASS_OBO_MAP.key?(refsnp.snp_type)
+          CLASS_OBO_MAP.key?(refsnp.variation_class)
         end
       end
     end

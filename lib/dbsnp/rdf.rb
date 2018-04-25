@@ -22,6 +22,7 @@ module DbSNP
 
     module CLI
       autoload :Runner, 'dbsnp/rdf/cli/runner'
+      autoload :Convert, 'dbsnp/rdf/cli/convert'
     end
 
     module Converter
@@ -29,7 +30,7 @@ module DbSNP
     end
 
     module Parser
-      autoload :XmlParser, 'dbsnp/rdf/parser/xml_parser'
+      autoload :VCFParser, 'dbsnp/rdf/parser/vcf_parser'
     end
 
     module Vocabularies
