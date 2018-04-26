@@ -116,9 +116,19 @@ module DbSNP::RDF
                                              CLINICAL_SIGNIFICANCE_MAP[variation.clinical_significance[idx + 1]])
           end
 
-          statements << RDF::Statement.new(subject,
-                                           Vocabularies::Snpo.hgvs,
-                                           "#{variation.reference_sequence}:g.#{hgvs_change(variation, alt)}")
+
+          if variation.hgvs && variation.hgvs[idx + 1]
+            # use hgvs in VCF
+            statements << RDF::Statement.new(subject,
+                                             Vocabularies::Snpo.hgvs,
+                                             variation.hgvs[idx + 1])
+          else
+            # construct hgvs
+            statements << RDF::Statement.new(subject,
+                                             Vocabularies::Snpo.hgvs,
+                                             "#{variation.reference_sequence}:g.#{hgvs_change(variation, alt)}")
+          end
+
 
           location_node = RDF::Node.new
           statements << RDF::Statement.new(subject,

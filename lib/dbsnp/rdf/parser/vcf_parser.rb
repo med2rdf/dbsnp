@@ -11,7 +11,7 @@ module DbSNP::RDF::Parser
 
     Variation = Struct.new(:rs_id, :variation_class, :gene_id,
                            :reference_allele, :alternative_alleles,
-                           :frequency, :reference_sequence, :position, :clinical_significance)
+                           :frequency, :reference_sequence, :position, :clinical_significance, :hgvs)
 
     class FormatError < StandardError
       def initialize(line)
@@ -57,28 +57,31 @@ module DbSNP::RDF::Parser
       variation.frequency             = parse_frequency(additional_information['FREQ']) if additional_information['FREQ']
       variation.reference_sequence    = tokens[0]
       variation.position              = tokens[1]
-      variation.clinical_significance = parse_clinical_significance(additional_information['CLNSIG']) if additional_information['CLNSIG']
+      variation.clinical_significance = parse_comma_separated_entries(additional_information['CLNSIG']) if additional_information['CLNSIG']
+      variation.hgvs                  = parse_comma_separated_entries(additional_information['CLNHGVS']) if additional_information['CLNHGVS']
       variation
     end
 
-    def parse_clinical_significance(text)
-      text.split(',').map{ |sig| sig == MISSING_VALUE ? nil : sig }
+    def parse_comma_separated_entries(text)
+      text.split(',').map { |val| val == MISSING_VALUE ? nil : val }
     end
 
     def parse_frequency(text)
       from_1000g = text.split('|').select { |t| t.start_with?('1000Genomes') }
       raise new InvalidFormat(text) if from_1000g.size > 1
       return nil if from_1000g.empty?
-      from_1000g[0].split(':')[1].split(',').map{ |freq| freq == MISSING_VALUE ? nil : freq }
+      from_1000g[0].split(':')[1].split(',').map { |freq| freq == MISSING_VALUE ? nil : freq }
     end
 
     def parse_additional_part(text)
       tokens = text.split(INFO_DELIMITER)
       tokens.map do |token|
-        k, v = token.split('=')
-        if k.nil? || v.nil?
+        idx = token.index('=')
+        if idx.nil? || idx == token.length - 1
           nil
         else
+          k = token[0...idx]
+          v = token[(idx + 1)..-1]
           [k, v]
         end
       end.compact.to_h

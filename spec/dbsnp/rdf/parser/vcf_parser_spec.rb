@@ -28,6 +28,7 @@ module DbSNP::RDF::Parser
           expect(variation.reference_sequence).to eq('NC_000001.10')
           expect(variation.position).to eq('10019')
           expect(variation.clinical_significance).to eq(nil)
+          expect(variation.hgvs).to eq(nil)
         end
       end
 
@@ -50,6 +51,30 @@ module DbSNP::RDF::Parser
           expect(variation.reference_sequence).to eq('NC_000001.10')
           expect(variation.position).to eq('13482')
           expect(variation.clinical_significance).to eq(nil)
+          expect(variation.hgvs).to eq(nil)
+        end
+      end
+
+
+      context 'for a line of rs61766284' do
+        let(:text) { File.read(File.join('spec', 'examples', 'vcf', 'rs61766284')) }
+
+        it { is_expected.to be_a(Enumerator) }
+
+        it { expect(subject.to_a.count).to eq(1) }
+
+        it 'should have properties of VCFParser::RefSNP' do
+          variation = subject.first
+          expect(variation.rs_id).to eq('rs61766284')
+          expect(variation.variation_class).to eq('SNV')
+          expect(variation.gene_id).to eq('9636')
+          expect(variation.reference_allele).to eq('C')
+          expect(variation.alternative_alleles).to eq(%w[G T])
+          expect(variation.frequency).to eq(['0.9966', nil, '0.003395'])
+          expect(variation.reference_sequence).to eq('NC_000001.11')
+          expect(variation.position).to eq('1014217')
+          expect(variation.clinical_significance).to eq([nil, nil, '2'])
+          expect(variation.hgvs).to eq(['NC_000001.11:g.1014217C=', 'NC_000001.11:g.1014217C>G', 'NC_000001.11:g.1014217C>T'])
         end
       end
 

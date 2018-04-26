@@ -28,7 +28,7 @@ module DbSNP::RDF::Generator
     describe '#ontology' do
       let(:dst_ttl) { File.join(sample_dst, 'dbsnp.ttl') }
 
-      before do
+      before(:context) do
         File.delete(dst_ttl) if File.exists?(dst_ttl)
       end
 
@@ -37,12 +37,16 @@ module DbSNP::RDF::Generator
 
         expect(File.exists?(dst_ttl)).to eq(true)
       end
+
+      after(:context) do
+        File.delete(dst_ttl) if File.exists?(dst_ttl)
+      end
     end
 
     describe '#refsnps' do
       let(:dst_ttl) { File.join(sample_dst, 'refsnps.ttl') }
 
-      before do
+      before(:context) do
         File.delete(dst_ttl) if File.exists?(dst_ttl)
       end
 
@@ -50,6 +54,10 @@ module DbSNP::RDF::Generator
         subject.refsnps
 
         expect(File.exists?(dst_ttl)).to eq(true)
+      end
+
+      after(:context) do
+        File.delete(dst_ttl) if File.exists?(dst_ttl)
       end
     end
   end
