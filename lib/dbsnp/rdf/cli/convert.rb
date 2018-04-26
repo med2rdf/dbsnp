@@ -25,18 +25,7 @@ module DbSNP
 
           validate_arguments
 
-          writer = ::RDF::Writer.for(:turtle)
-
-          File.open(ARGV[1], 'w') do |file|
-            file.write(writer.buffer(prefixes: DbSNP::RDF::PREFIXES, stream: true) do |_|
-              # just output header
-            end)
-            Parser::VCFParser.open(ARGV[0]).each do |refsnp|
-              file.write(writer.buffer(prefixes: DbSNP::RDF::PREFIXES) do |buffer|
-                DbSNP::RDF::Converter::RefsnpToTriples.convert(refsnp).each { |statement| buffer << statement }
-              end.gsub(/^@.*$\n/, ''))
-            end
-          end
+          Generator::TurtleGenerator.new(ARGV[0], ARGV[1]).all
 
         rescue OptionParser::InvalidOption => e
           STDERR.puts e.message
@@ -70,9 +59,10 @@ module DbSNP
         def validate_arguments
           raise("src and dst must be specified") if ARGV.size < 2
           src, dst = ARGV
-          raise("#{src} is a directory.") if File.directory?(src)
+          raise("#{src} must not be a directory.") if File.directory?(src)
           raise("#{src} does not exist.") unless File.exist?(src)
-          raise("#{dst} is a directory.") if File.directory?(dst)
+          raise("#{dst} does not exist.") unless File.exist?(dst)
+          raise("#{dst} must be a directory.") unless File.directory?(dst)
         end
       end
     end

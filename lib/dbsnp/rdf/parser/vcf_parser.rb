@@ -6,7 +6,7 @@ module DbSNP::RDF::Parser
     COLUMN_DELIMITER = "\t"
     INFO_DELIMITER = ';'
 
-    RefSNP = Struct.new(:id, :variation_class, :gene_id,
+    Variation = Struct.new(:rs_id, :variation_class, :gene_id,
                         :reference_allele, :alternative_alleles,
                         :frequency, :reference_sequence, :position, :clinical_significance)
 
@@ -30,8 +30,8 @@ module DbSNP::RDF::Parser
     def each
       if block_given?
         @io.each_line do |line|
-          refsnp = parse_line(line)
-          yield refsnp if refsnp
+          variation = parse_line(line)
+          yield variation if variation
         end
       else
         to_enum
@@ -43,19 +43,19 @@ module DbSNP::RDF::Parser
     def parse_line(line)
       return nil if line.start_with?('#') || line.empty?
       tokens = line.split(COLUMN_DELIMITER).map(&:strip)
-      refsnp = RefSNP.new
+      variation = Variation.new
       additional_information = parse_additional_part(tokens[7])
 
-      refsnp.id = tokens[2]
-      refsnp.variation_class = additional_information['VC']
-      refsnp.gene_id = additional_information['GENEINFO'].split(':')[1] if additional_information['GENEINFO']
-      refsnp.reference_allele = tokens[3]
-      refsnp.alternative_alleles = tokens[4].split(',')
-      refsnp.frequency = parse_frequency_part(additional_information['FREQ']) if additional_information['FREQ']
-      refsnp.reference_sequence = tokens[0]
-      refsnp.position = tokens[1]
-      refsnp.clinical_significance = additional_information['CLINSIG']
-      refsnp
+      variation.rs_id = tokens[2]
+      variation.variation_class = additional_information['VC']
+      variation.gene_id = additional_information['GENEINFO'].split(':')[1] if additional_information['GENEINFO']
+      variation.reference_allele = tokens[3]
+      variation.alternative_alleles = tokens[4].split(',')
+      variation.frequency = parse_frequency_part(additional_information['FREQ']) if additional_information['FREQ']
+      variation.reference_sequence = tokens[0]
+      variation.position = tokens[1]
+      variation.clinical_significance = additional_information['CLNSIG'].split(',') if additional_information['CLNSIG']
+      variation
     end
 
     def parse_frequency_part(text)

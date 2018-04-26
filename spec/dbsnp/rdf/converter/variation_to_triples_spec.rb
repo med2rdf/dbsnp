@@ -2,15 +2,15 @@ require 'spec_helper'
 
 module DbSNP::RDF
   module Converter
-    RSpec.describe RefsnpToTriples do
-      it { expect(RefsnpToTriples).to respond_to(:convert).with(1).argument }
+    RSpec.describe VariationToTriples do
+      it { expect(VariationToTriples).to respond_to(:convert).with(1).argument }
 
       describe '.convert' do
-        let(:subject) { RefsnpToTriples.convert(refsnp) }
-        let(:refsnps) { Parser::VCFParser.open(File.join('spec', 'examples', 'vcf', 'three_snps.vcf')).each.to_a }
+        let(:subject) { VariationToTriples.convert(variation) }
+        let(:variations) { Parser::VCFParser.open(File.join('spec', 'examples', 'vcf', 'three_snps.vcf')).each.to_a }
 
         context 'for rs775809821' do
-          let(:refsnp) { refsnps[0] }
+          let(:variation) { variations[0] }
           it { is_expected.to be_a(Array) }
 
           it { is_expected.to all(be_a(RDF::Statement)) }
@@ -62,7 +62,7 @@ module DbSNP::RDF
 
           context 'for rs978760828' do
             let(:refsnp_uri) { RDF::URI.new("#{PREFIXES[:dbsnp]}rs978760828") }
-            let(:refsnp) { refsnps[1] }
+            let(:variation) { variations[1] }
 
             it 'should have rdf triples' do
               is_expected.to include(RDF::Statement.new(refsnp_uri,
@@ -116,7 +116,7 @@ module DbSNP::RDF
 
           context 'for rs1008829651' do
             let(:refsnp_uri) { RDF::URI.new("#{PREFIXES[:dbsnp]}rs1008829651") }
-            let(:refsnp) { refsnps[2] }
+            let(:variation) { variations[2] }
 
             it 'should have rdf triples' do
               is_expected.to include(RDF::Statement.new(refsnp_uri,

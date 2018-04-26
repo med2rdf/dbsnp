@@ -36,6 +36,13 @@ module DbSNP::RDF
     end
 
     class DbSNP < RDF::StrictVocabulary(PREFIXES[:dbsnp])
+      # Ontology definition
+      ontology to_uri.freeze,
+               type:             ::RDF::OWL.Ontology,
+               :'dc:title'       => 'dbSNP Ontology',
+               :'dc:description' => 'dbSNP Ontology describes classes and properties which is used in DGIdb RDF',
+               :'owl:imports'    => [::RDF::Vocab::DC.to_s].freeze
+
       term(:RefSnp,
            type:        RDF::OWL.Class,
            label:       'refSNP',

@@ -26,7 +26,7 @@ module DbSNP
     end
 
     module Converter
-      autoload :RefsnpToTriples, 'dbsnp/rdf/converter/refsnp_to_triples'
+      autoload :VariationToTriples, 'dbsnp/rdf/converter/variation_to_triples'
     end
 
     module Parser
@@ -37,6 +37,10 @@ module DbSNP
       autoload :M2r, 'dbsnp/rdf/vocabularies'
       autoload :Obo, 'dbsnp/rdf/vocabularies'
       autoload :DbSNP, 'dbsnp/rdf/vocabularies'
+    end
+
+    module Generator
+      autoload :TurtleGenerator, 'dbsnp/rdf/generator/turtle_generator.rb'
     end
   end
 end

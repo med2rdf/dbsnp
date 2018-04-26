@@ -18,19 +18,20 @@ module DbSNP::RDF::Parser
         it { expect(subject.to_a.count).to eq(1) }
 
         it 'should have properties of VCFParser::RefSNP' do
-          refsnp = subject.first
-          expect(refsnp.id).to eq('rs775809821')
-          expect(refsnp.variation_class).to eq('INDEL')
-          expect(refsnp.gene_id).to eq(nil)
-          expect(refsnp.reference_allele).to eq('TA')
-          expect(refsnp.alternative_alleles).to eq(%w[T])
-          expect(refsnp.frequency).to eq(nil)
-          expect(refsnp.reference_sequence).to eq('NC_000001.10')
-          expect(refsnp.position).to eq('10019')
-          expect(refsnp.clinical_significance).to eq(nil)
+          variation = subject.first
+          expect(variation.rs_id).to eq('rs775809821')
+          expect(variation.variation_class).to eq('INDEL')
+          expect(variation.gene_id).to eq(nil)
+          expect(variation.reference_allele).to eq('TA')
+          expect(variation.alternative_alleles).to eq(%w[T])
+          expect(variation.frequency).to eq(nil)
+          expect(variation.reference_sequence).to eq('NC_000001.10')
+          expect(variation.position).to eq('10019')
+          expect(variation.clinical_significance).to eq(nil)
         end
       end
 
+      # TODO: clinical_significance
       # NC_000001.10	63738	rs869033224	ACT	CTA	.	.	RS=869033224;dbSNPBuildID=147;SSR=0;VC=MNV
 
 

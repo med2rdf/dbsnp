@@ -6,8 +6,8 @@ module DbSNP::RDF
     HGVS_PATTERN = /^(.+):.\.(\d+)([[:alpha:]>]+)$/
 
     class ValidationError < StandardError
-      def initialize(refsnp)
-        super("invalid refsnp: #{refsnp}")
+      def initialize(variant_call)
+        super("invalid variation: #{variation}")
       end
     end
 
@@ -17,84 +17,108 @@ module DbSNP::RDF
         'INS'                          => Vocabularies::Obo.SO_0000667,
         'DEL'                          => Vocabularies::Obo.SO_0000159,
         'MNV'                          => Vocabularies::Obo.SO_0002007,
-    }
+    }.freeze
 
-    class RefsnpToTriples
+    CLINICAL_SIGNIFICANCE_MAP = {
+        '0' => 'Uncertain significance',
+        '1' => 'Not provided',
+        '2' => 'Benign',
+        '3' => 'Likely benign',
+        '4' => 'Likely pathogenic',
+        '5' => 'Pathogenic',
+        '6' => 'Drug response',
+        '8' => 'Confers sensitivity',
+        '9' => 'Risk-factor',
+        '10' => 'Association',
+        '11' => 'Protective',
+        '12' => 'Conflict',
+        '13' => 'Affects',
+        '255' => 'Other'
+    }.freeze
+
+    class VariationToTriples
       class << self
-        def convert(refsnp)
+        def convert(variation)
           statements = []
 
-          raise ValidationError.new(refsnp) unless validate(refsnp)
+          raise ValidationError.new(variation) unless validate(variation)
 
-          subject = RDF::URI.new("#{PREFIXES[:dbsnp]}#{refsnp.id}")
-          if refsnp.alternative_alleles.count == 1
-            statements += part_statements(subject, refsnp, refsnp.alternative_alleles[0], 0)
+          subject = RDF::URI.new("#{PREFIXES[:dbsnp]}#{variation.rs_id}")
+          if variation.alternative_alleles.count == 1
+            statements += part_statements(subject, variation, variation.alternative_alleles[0], 0)
           else
             statements << RDF::Statement.new(subject,
                                              RDF::Vocab::DC::identifier,
-                                             refsnp.id)
+                                             variation.rs_id)
 
             statements << RDF::Statement.new(subject,
                                              ::RDF::type,
                                              Vocabularies::M2r.Variation)
 
 
-            refsnp.alternative_alleles.each_with_index do |alt, i|
-              part_subject = RDF::URI.new("#{subject}##{refsnp.reference_allele}-#{alt}")
+            variation.alternative_alleles.each_with_index do |alt, i|
+              part_subject = RDF::URI.new("#{subject}##{variation.reference_allele}-#{alt}")
               statements << RDF::Statement.new(subject,
                                                ::RDF::Vocab::DC::hasPart,
                                                part_subject)
-              statements += part_statements(part_subject, refsnp, alt, i)
+              statements += part_statements(part_subject, variation, alt, i)
             end
           end
 
           statements
         end
 
-        def part_statements(subject, refsnp, alt, idx)
+        def part_statements(subject, variation, alt, idx)
           statements = []
 
           statements << RDF::Statement.new(subject,
                                            RDF::Vocab::DC::identifier,
-                                           refsnp.id)
+                                           variation.rs_id)
 
           statements << RDF::Statement.new(subject,
                                            ::RDF::type,
                                            Vocabularies::M2r.Variation)
 
-          unless CLASS_OBO_MAP[refsnp.variation_class].nil?
+          unless CLASS_OBO_MAP[variation.variation_class].nil?
             statements << RDF::Statement.new(subject,
                                              ::RDF::type,
-                                             CLASS_OBO_MAP[refsnp.variation_class])
+                                             CLASS_OBO_MAP[variation.variation_class])
           end
 
           statements << RDF::Statement.new(subject,
                                            Vocabularies::DbSNP.taxonomy,
                                            RDF::URI.new(PREFIXES[:tax] + '9606'))
 
-          if refsnp.gene_id
+          if variation.gene_id
             statements << RDF::Statement.new(subject,
                                              Vocabularies::M2r.gene,
-                                             RDF::URI.new(PREFIXES[:ncbi_gene] + refsnp.gene_id))
+                                             RDF::URI.new(PREFIXES[:ncbi_gene] + variation.gene_id))
           end
 
           statements << RDF::Statement.new(subject,
                                            Vocabularies::M2r.reference_allele,
-                                           refsnp.reference_allele)
+                                           variation.reference_allele)
 
           statements << RDF::Statement.new(subject,
                                            Vocabularies::M2r.alternative_allele,
                                            alt)
 
-          if refsnp.frequency
+          if variation.frequency
             statements << RDF::Statement.new(subject,
                                              Vocabularies::Snpo.frequency,
-                                             refsnp.frequency[idx + 1].to_f)
+                                             variation.frequency[idx + 1].to_f)
+          end
+
+
+          if variation.clinical_significance
+            statements << RDF::Statement.new(subject,
+                                             Vocabularies::Snpo.clinical_significance,
+                                             CLINICAL_SIGNIFICANCE_MAP[variation.clinical_significance[idx + 1]])
           end
 
           statements << RDF::Statement.new(subject,
                                            Vocabularies::Snpo.hgvs,
-                                           "#{refsnp.reference_sequence}:g.#{hgvs_change(refsnp, alt)}")
+                                           "#{variation.reference_sequence}:g.#{hgvs_change(variation, alt)}")
 
           location_node = RDF::Node.new
           statements << RDF::Statement.new(subject,
@@ -103,7 +127,7 @@ module DbSNP::RDF
 
           statements << RDF::Statement.new(location_node,
                                            Vocabularies::Faldo.position,
-                                           refsnp.position.to_i)
+                                           variation.position.to_i)
 
           statements << RDF::Statement.new(location_node,
                                            RDF::type,
@@ -111,17 +135,17 @@ module DbSNP::RDF
 
           statements << RDF::Statement.new(location_node,
                                            Vocabularies::Faldo.reference,
-                                           RDF::URI.new(PREFIXES[:refseq] + refsnp.reference_sequence))
+                                           RDF::URI.new(PREFIXES[:refseq] + variation.reference_sequence))
           statements
         end
 
-        def hgvs_change(refsnp, alt)
-          ref = refsnp.reference_allele
+        def hgvs_change(variation, alt)
+          ref = variation.reference_allele
           if ref.length == 1 && alt.length == 1
-            "#{refsnp.position}#{ref}>#{alt}"
+            "#{variation.position}#{ref}>#{alt}"
           elsif ref.length > alt.length && ref.start_with?(alt)
-            start_pos = refsnp.position.to_i + alt.length
-            end_pos   = refsnp.position.to_i + ref.length
+            start_pos = variation.position.to_i + alt.length
+            end_pos   = variation.position.to_i + ref.length
             if end_pos - start_pos == 1
               "#{start_pos}del#{ref[-1]}"
             else
@@ -129,20 +153,20 @@ module DbSNP::RDF
             end
           elsif ref.length < alt.length && alt.start_with?(ref)
             if repeated_in?(ref, alt)
-              start_pos = refsnp.position.to_i
-              end_pos   = refsnp.position.to_i + ref.length
+              start_pos = variation.position.to_i
+              end_pos   = variation.position.to_i + ref.length
               if end_pos - start_pos == 1
                 "#{start_pos}dup#{ref[-1]}"
               else
                 "#{start_pos}_#{end_pos}dup#{ref[-1]}"
               end
             else
-              start_pos = refsnp.position.to_i + ref.length
+              start_pos = variation.position.to_i + ref.length
               end_pos   = start_pos + 1
               "#{start_pos}_#{end_pos}ins#{ref[ref.length..-1]}"
             end
           else
-            start_pos = refsnp.position.to_i
+            start_pos = variation.position.to_i
             end_pos   = start_pos + ref.length
             "#{start_pos}_#{end_pos}delins#{alt}"
           end
@@ -165,8 +189,8 @@ module DbSNP::RDF
           true
         end
 
-        def validate(refsnp)
-          CLASS_OBO_MAP.key?(refsnp.variation_class)
+        def validate(variation)
+          CLASS_OBO_MAP.key?(variation.variation_class)
         end
       end
     end
