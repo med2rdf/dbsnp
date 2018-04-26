@@ -33,7 +33,7 @@ module DbSNP::RDF
         '11' => 'Protective',
         '12' => 'Conflict',
         '13' => 'Affects',
-        '255' => 'Other'
+        '255' => 'Other',
     }.freeze
 
     class VariationToTriples
@@ -103,14 +103,14 @@ module DbSNP::RDF
                                            Vocabularies::M2r.alternative_allele,
                                            alt)
 
-          if variation.frequency
+          if variation.frequency && variation.frequency[idx + 1]
             statements << RDF::Statement.new(subject,
                                              Vocabularies::Snpo.frequency,
                                              variation.frequency[idx + 1].to_f)
           end
 
 
-          if variation.clinical_significance
+          if variation.clinical_significance && CLINICAL_SIGNIFICANCE_MAP[variation.clinical_significance[idx + 1]]
             statements << RDF::Statement.new(subject,
                                              Vocabularies::Snpo.clinical_significance,
                                              CLINICAL_SIGNIFICANCE_MAP[variation.clinical_significance[idx + 1]])
@@ -145,8 +145,8 @@ module DbSNP::RDF
             "#{variation.position}#{ref}>#{alt}"
           elsif ref.length > alt.length && ref.start_with?(alt)
             start_pos = variation.position.to_i + alt.length
-            end_pos   = variation.position.to_i + ref.length
-            if end_pos - start_pos == 1
+            end_pos   = variation.position.to_i + ref.length - 1
+            if end_pos == start_pos
               "#{start_pos}del#{ref[-1]}"
             else
               "#{start_pos}_#{end_pos}del#{ref[alt.length..-1]}"
@@ -154,21 +154,21 @@ module DbSNP::RDF
           elsif ref.length < alt.length && alt.start_with?(ref)
             if repeated_in?(ref, alt)
               start_pos = variation.position.to_i
-              end_pos   = variation.position.to_i + ref.length
-              if end_pos - start_pos == 1
+              end_pos   = variation.position.to_i + ref.length - 1
+              if end_pos == start_pos
                 "#{start_pos}dup#{ref[-1]}"
               else
                 "#{start_pos}_#{end_pos}dup#{ref[-1]}"
               end
             else
-              start_pos = variation.position.to_i + ref.length
+              start_pos = variation.position.to_i + ref.length - 1
               end_pos   = start_pos + 1
-              "#{start_pos}_#{end_pos}ins#{ref[ref.length..-1]}"
+              "#{start_pos}_#{end_pos}ins#{alt[ref.length..-1]}"
             end
           else
             start_pos = variation.position.to_i
-            end_pos   = start_pos + ref.length
-            "#{start_pos}_#{end_pos}delins#{alt}"
+            end_pos   = start_pos + ref.length - 1
+            "#{start_pos}_#{end_pos}del#{ref}ins#{alt}"
           end
         end
 
