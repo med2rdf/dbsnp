@@ -29,10 +29,13 @@ module DbSNP::RDF
 
     class Faldo < RDF::StrictVocabulary(PREFIXES[:faldo])
       term :ExactPosition
+      term :Region
 
       property :location
       property :position
       property :reference
+      property :begin
+      property :end
     end
 
     class DbSNP < RDF::StrictVocabulary(PREFIXES[:dbsnp])

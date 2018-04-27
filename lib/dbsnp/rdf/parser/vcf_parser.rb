@@ -9,7 +9,7 @@ module DbSNP::RDF::Parser
     INFO_DELIMITER   = ';'.freeze
     MISSING_VALUE    = '.'.freeze
 
-    Variation = Struct.new(:rs_id, :variation_class, :gene_id,
+    Variation = Struct.new(:rs_id, :variation_class, :gene_id_list,
                            :reference_allele, :alternative_alleles,
                            :frequency, :reference_sequence, :position, :clinical_significance, :hgvs)
 
@@ -51,7 +51,11 @@ module DbSNP::RDF::Parser
 
       variation.rs_id                 = tokens[2]
       variation.variation_class       = additional_information['VC']
-      variation.gene_id               = additional_information['GENEINFO'].split(':')[1] if additional_information['GENEINFO']
+      if additional_information['GENEINFO']
+        variation.gene_id_list          = additional_information['GENEINFO'].split('|').map{ |pair| pair.split(':')[1]}
+      else
+        variation.gene_id_list        = []
+      end
       variation.reference_allele      = tokens[3]
       variation.alternative_alleles   = tokens[4].split(',')
       variation.frequency             = parse_frequency(additional_information['FREQ']) if additional_information['FREQ']

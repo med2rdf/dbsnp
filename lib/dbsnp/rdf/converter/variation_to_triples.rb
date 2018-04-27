@@ -12,27 +12,27 @@ module DbSNP::RDF
     end
 
     CLASS_OBO_MAP = {
-        'SNV'                          => Vocabularies::Obo.SO_0001483,
-        'INDEL'                        => Vocabularies::Obo.SO_1000032,
-        'INS'                          => Vocabularies::Obo.SO_0000667,
-        'DEL'                          => Vocabularies::Obo.SO_0000159,
-        'MNV'                          => Vocabularies::Obo.SO_0002007,
+        'SNV'   => Vocabularies::Obo.SO_0001483,
+        'INDEL' => Vocabularies::Obo.SO_1000032,
+        'INS'   => Vocabularies::Obo.SO_0000667,
+        'DEL'   => Vocabularies::Obo.SO_0000159,
+        'MNV'   => Vocabularies::Obo.SO_0002007,
     }.freeze
 
     CLINICAL_SIGNIFICANCE_MAP = {
-        '0' => 'Uncertain significance',
-        '1' => 'Not provided',
-        '2' => 'Benign',
-        '3' => 'Likely benign',
-        '4' => 'Likely pathogenic',
-        '5' => 'Pathogenic',
-        '6' => 'Drug response',
-        '8' => 'Confers sensitivity',
-        '9' => 'Risk-factor',
-        '10' => 'Association',
-        '11' => 'Protective',
-        '12' => 'Conflict',
-        '13' => 'Affects',
+        '0'   => 'Uncertain significance',
+        '1'   => 'Not provided',
+        '2'   => 'Benign',
+        '3'   => 'Likely benign',
+        '4'   => 'Likely pathogenic',
+        '5'   => 'Pathogenic',
+        '6'   => 'Drug response',
+        '8'   => 'Confers sensitivity',
+        '9'   => 'Risk-factor',
+        '10'  => 'Association',
+        '11'  => 'Protective',
+        '12'  => 'Conflict',
+        '13'  => 'Affects',
         '255' => 'Other',
     }.freeze
 
@@ -89,10 +89,10 @@ module DbSNP::RDF
                                            Vocabularies::DbSNP.taxonomy,
                                            RDF::URI.new(PREFIXES[:tax] + '9606'))
 
-          if variation.gene_id
+          variation.gene_id_list.each do |gene_id|
             statements << RDF::Statement.new(subject,
                                              Vocabularies::M2r.gene,
-                                             RDF::URI.new(PREFIXES[:ncbi_gene] + variation.gene_id))
+                                             RDF::URI.new(PREFIXES[:ncbi_gene] + gene_id))
           end
 
           statements << RDF::Statement.new(subject,
@@ -135,17 +135,65 @@ module DbSNP::RDF
                                            Vocabularies::Faldo.location,
                                            location_node)
 
-          statements << RDF::Statement.new(location_node,
-                                           Vocabularies::Faldo.position,
-                                           variation.position.to_i)
 
-          statements << RDF::Statement.new(location_node,
-                                           RDF::type,
-                                           Vocabularies::Faldo.ExactPosition)
+          reference_uri = RDF::URI.new(PREFIXES[:refseq] + variation.reference_sequence)
+          if variation.reference_allele.length == 1
+            statements << RDF::Statement.new(location_node,
+                                             Vocabularies::Faldo.position,
+                                             variation.position.to_i)
 
-          statements << RDF::Statement.new(location_node,
-                                           Vocabularies::Faldo.reference,
-                                           RDF::URI.new(PREFIXES[:refseq] + variation.reference_sequence))
+            statements << RDF::Statement.new(location_node,
+                                             RDF::type,
+                                             Vocabularies::Faldo.ExactPosition)
+
+            statements << RDF::Statement.new(location_node,
+                                             Vocabularies::Faldo.reference,
+                                             reference_uri)
+          else
+            statements << RDF::Statement.new(location_node,
+                                             RDF::type,
+                                             Vocabularies::Faldo.Region)
+
+            begin_node = RDF::Node.new
+
+
+            statements << RDF::Statement.new(location_node,
+                                             Vocabularies::Faldo.begin,
+                                             begin_node)
+
+            statements << RDF::Statement.new(begin_node,
+                                             RDF::type,
+                                             Vocabularies::Faldo.ExactPosition)
+
+            statements << RDF::Statement.new(begin_node,
+                                             Vocabularies::Faldo.position,
+                                             variation.position.to_i)
+
+            statements << RDF::Statement.new(begin_node,
+                                             Vocabularies::Faldo.reference,
+                                             reference_uri)
+
+
+            end_node = RDF::Node.new
+
+
+            statements << RDF::Statement.new(location_node,
+                                             Vocabularies::Faldo.end,
+                                             end_node)
+
+            statements << RDF::Statement.new(end_node,
+                                             RDF::type,
+                                             Vocabularies::Faldo.ExactPosition)
+
+            statements << RDF::Statement.new(end_node,
+                                             Vocabularies::Faldo.position,
+                                             variation.position.to_i + variation.reference_allele.length - 1)
+
+            statements << RDF::Statement.new(end_node,
+                                             Vocabularies::Faldo.reference,
+                                             reference_uri)
+          end
+
           statements
         end
 

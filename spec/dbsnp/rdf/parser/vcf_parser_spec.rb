@@ -21,7 +21,7 @@ module DbSNP::RDF::Parser
           variation = subject.first
           expect(variation.rs_id).to eq('rs775809821')
           expect(variation.variation_class).to eq('INDEL')
-          expect(variation.gene_id).to eq(nil)
+          expect(variation.gene_id_list).to eq([])
           expect(variation.reference_allele).to eq('TA')
           expect(variation.alternative_alleles).to eq(%w[T])
           expect(variation.frequency).to eq(nil)
@@ -44,7 +44,7 @@ module DbSNP::RDF::Parser
           variation = subject.first
           expect(variation.rs_id).to eq('rs537951473')
           expect(variation.variation_class).to eq('SNV')
-          expect(variation.gene_id).to eq(nil)
+          expect(variation.gene_id_list).to eq([])
           expect(variation.reference_allele).to eq('G')
           expect(variation.alternative_alleles).to eq(%w[A C])
           expect(variation.frequency).to eq(['0.9996', nil, '0.0003994'])
@@ -67,7 +67,7 @@ module DbSNP::RDF::Parser
           variation = subject.first
           expect(variation.rs_id).to eq('rs61766284')
           expect(variation.variation_class).to eq('SNV')
-          expect(variation.gene_id).to eq('9636')
+          expect(variation.gene_id_list).to eq(['9636'])
           expect(variation.reference_allele).to eq('C')
           expect(variation.alternative_alleles).to eq(%w[G T])
           expect(variation.frequency).to eq(['0.9966', nil, '0.003395'])
