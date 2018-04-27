@@ -40,7 +40,11 @@ module DbSNP
     end
 
     module Generator
-      autoload :TurtleGenerator, 'dbsnp/rdf/generator/turtle_generator.rb'
+      autoload :TurtleGenerator, 'dbsnp/rdf/generator/turtle_generator'
+    end
+
+    module Util
+      autoload :MultiBlockGzipReader, 'dbsnp/rdf/util/multi_block_gzip_reader'
     end
   end
 end

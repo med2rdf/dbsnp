@@ -1,5 +1,4 @@
 require 'rexml/parsers/pullparser'
-require 'zlib'
 
 module DbSNP::RDF::Parser
   class VCFParser
@@ -26,7 +25,7 @@ module DbSNP::RDF::Parser
 
     def self.open(target)
       f = File.open(target)
-      f = Zlib::GzipReader.new(f) if target.match?(/(\.bgz)|(\.gz)$/)
+      f = DbSNP::RDF::Util::MultiBlockGzipReader.new(f) if target.match?(/(\.bgz)|(\.gz)$/)
       new(f)
     end
 
