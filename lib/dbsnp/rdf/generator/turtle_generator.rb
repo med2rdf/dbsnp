@@ -17,9 +17,8 @@ module DbSNP::RDF
       end
 
       def ontology
-        # TODO use prefixes different from #refsnps
         File.open(File.join(@dst, 'dbsnp.ttl'), 'w') do |dst_file|
-          dst_file.write(@writer.buffer(prefixes: DbSNP::RDF::PREFIXES, stream: true) do |buffer|
+          dst_file.write(@writer.buffer(prefixes: Vocabularies::DbSNP.prefixes, stream: true) do |buffer|
             # just output header
           end)
           dst_file.write((Vocabularies::DbSNP.to_ttl).gsub(/^@.*$\n/, ''))

@@ -54,13 +54,20 @@ module DbSNP::RDF
       )
 
       property(:taxonomy,
-               type: RDF::OWL.ObjectProperty,
-               label: 'taxonomy'.freeze,
+               type:        RDF::OWL.ObjectProperty,
+               label:       'taxonomy'.freeze,
                isDefinedBy: to_s.freeze,
-               comment:  'taxonomy of the refSNP on dbSNP'.freeze,
-               domain:  M2r.Variation,
-               range:   RDF::Vocab::RDFS.Resource
+               comment:     'taxonomy of the refSNP on dbSNP'.freeze,
+               domain:      M2r.Variation,
+               range:       RDF::Vocab::RDFS.Resource
       )
+
+      def self.prefixes
+        PREFIXES.merge({
+                           owl:  RDF::OWL.to_s.freeze,
+                           rdfs: RDF::Vocab::RDFS.to_s.freeze
+                       })
+      end
     end
   end
 end

@@ -2,15 +2,23 @@ require 'rexml/parsers/pullparser'
 
 module DbSNP::RDF::Parser
   class VCFParser
+    extend Forwardable
     include Enumerable
+
+    Variation = Struct.new(:rs_id, :variation_class, :gene_id_list,
+                           :reference_allele, :alternative_alleles,
+                           :frequency, :reference_sequence, :position, :clinical_significance, :hgvs)
 
     COLUMN_DELIMITER = "\t".freeze
     INFO_DELIMITER   = ';'.freeze
     MISSING_VALUE    = '.'.freeze
 
-    Variation = Struct.new(:rs_id, :variation_class, :gene_id_list,
-                           :reference_allele, :alternative_alleles,
-                           :frequency, :reference_sequence, :position, :clinical_significance, :hgvs)
+    def_delegators :@io, :binmode, :binmode?, :close, :close_read, :close_write,
+                   :closed?, :eof, :eof?, :external_encoding, :fcntl,
+                   :fileno, :flock, :flush, :fsync, :internal_encoding,
+                   :ioctl, :isatty, :path, :pid, :pos, :pos=, :reopen,
+                   :seek, :stat, :string, :sync, :sync=, :tell, :to_i,
+                   :to_io, :truncate, :tty?, :lineno
 
     class FormatError < StandardError
       def initialize(line)
@@ -19,24 +27,35 @@ module DbSNP::RDF::Parser
     end
 
     def initialize(io)
-      #TODO close file
       @file_path = io.is_a?(File) ? io.path : 'StringIO'
       @io = io.is_a?(String) ? StringIO.new(io) : io
     end
 
-
     def self.open(target)
       f = File.open(target)
       f = DbSNP::RDF::Util::MultiBlockGzipReader.new(f) if target.match?(/(\.bgz)|(\.gz)$/)
-      new(f)
+      begin
+        parser = new(f)
+      rescue StandardError
+        f.close
+        raise
+      end
+
+      if block_given?
+        begin
+          yield parser
+        ensure
+          parser.close
+        end
+      else
+        parser
+      end
     end
 
     def each
       if block_given?
-        lineno = 0 #TODO delegate lineno to @io
         @io.each_line do |line|
-          lineno += 1
-          variation = parse_line(line, lineno)
+          variation = parse_line(line)
           yield variation if variation
         end
       else
@@ -46,7 +65,7 @@ module DbSNP::RDF::Parser
 
     private
 
-    def parse_line(line, lineno)
+    def parse_line(line)
       retrial = false
       begin
         return nil if line.start_with?('#') || line.empty?

@@ -200,8 +200,10 @@ module DbSNP::RDF
         def hgvs_change(variation, alt)
           ref = variation.reference_allele
           if ref.length == 1 && alt.length == 1
+            # substitution
             "#{variation.position}#{ref}>#{alt}"
           elsif ref.length > alt.length && ref.start_with?(alt)
+            # deletion
             start_pos = variation.position.to_i + alt.length
             end_pos   = variation.position.to_i + ref.length - 1
             if end_pos == start_pos
@@ -211,6 +213,7 @@ module DbSNP::RDF
             end
           elsif ref.length < alt.length && alt.start_with?(ref)
             if repeated_in?(ref, alt)
+              # duplication
               start_pos = variation.position.to_i
               end_pos   = variation.position.to_i + ref.length - 1
               if end_pos == start_pos
@@ -219,11 +222,13 @@ module DbSNP::RDF
                 "#{start_pos}_#{end_pos}dup#{ref[-1]}"
               end
             else
+              # insertion
               start_pos = variation.position.to_i + ref.length - 1
               end_pos   = start_pos + 1
               "#{start_pos}_#{end_pos}ins#{alt[ref.length..-1]}"
             end
           else
+            # deletion and insertion
             start_pos = variation.position.to_i
             end_pos   = start_pos + ref.length - 1
             "#{start_pos}_#{end_pos}del#{ref}ins#{alt}"
