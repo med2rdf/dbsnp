@@ -78,10 +78,6 @@ module DbSNP::RDF::Parser
         end
       end
 
-      # TODO: clinical_significance
-      # NC_000001.10	63738	rs869033224	ACT	CTA	.	.	RS=869033224;dbSNPBuildID=147;SSR=0;VC=MNV
-
-
       context 'for comment lines' do
         let(:text) { "#these \n# are \n# comments\n" }
 
@@ -92,7 +88,27 @@ module DbSNP::RDF::Parser
     end
 
     describe '#open' do
-      let(:subject) { VCFParser.open(file) }
+      context 'for a raw vcf file' do
+        let(:file) { File.join('spec', 'examples', 'vcf', 'three_snps.vcf') }
+        let(:subject) { VCFParser.open(file) }
+
+        it { is_expected.to be_a(VCFParser) }
+
+        it 'should parse three variations' do
+          expect(subject.each.to_a.count).to eq(3)
+        end
+      end
+
+      context 'for a gzipped vcf file' do
+        let(:file) { File.join('spec', 'examples', 'vcf', '400_snps.vcf.gz') }
+        let(:subject) { VCFParser.open(file) }
+
+        it { is_expected.to be_a(VCFParser) }
+
+        it 'should parse 400 variations' do
+          expect(subject.each.to_a.count).to eq(400)
+        end
+      end
     end
   end
 end
