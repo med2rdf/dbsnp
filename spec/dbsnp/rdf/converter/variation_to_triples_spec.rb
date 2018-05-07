@@ -561,6 +561,75 @@ module DbSNP::RDF
             expect{ VariationToTriples.convert(variation) }.to raise_error(ValidationError)
           end
         end
+
+        context 'for rs539283387.vcf' do
+          let(:variations) { Parser::VCFParser.open(File.join('spec', 'examples', 'vcf', 'rs539283387.vcf')).each.to_a }
+
+          let(:variation) { variations[0] }
+          it { is_expected.to be_a(Array) }
+
+          it { is_expected.to all(be_a(RDF::Statement)) }
+          let(:refsnp_uri) { RDF::URI.new("#{PREFIXES[:dbsnp]}rs539283387") }
+
+          it 'should have rdf triples' do
+            is_expected.to include(RDF::Statement.new(refsnp_uri,
+                                                      RDF::Vocab::DC::identifier,
+                                                      "rs539283387"))
+
+            is_expected.to include(RDF::Statement.new(refsnp_uri,
+                                                      RDF::type,
+                                                      Vocabularies::M2r.Variation))
+
+            is_expected.to include(RDF::Statement.new(refsnp_uri,
+                                                      RDF::type,
+                                                      Vocabularies::Obo.SO_0001483))
+
+            is_expected.to include(RDF::Statement.new(refsnp_uri,
+                                                      Vocabularies::DbSNP.taxonomy,
+                                                      RDF::URI.new(PREFIXES[:tax] + '9606')))
+
+            is_expected.to include(RDF::Statement.new(refsnp_uri,
+                                                      Vocabularies::M2r::gene,
+                                                      RDF::URI.new(PREFIXES[:ncbi_gene] + '375790')))
+
+            is_expected.to include(RDF::Statement.new(refsnp_uri,
+                                                      Vocabularies::Snpo.frequency,
+                                                      0.009585))
+
+            is_expected.to include(RDF::Statement.new(refsnp_uri,
+                                                      Vocabularies::M2r.reference_allele,
+                                                      'G'))
+
+            is_expected.to include(RDF::Statement.new(refsnp_uri,
+                                                      Vocabularies::M2r.alternative_allele,
+                                                      'C'))
+
+            is_expected.to include(RDF::Statement.new(refsnp_uri,
+                                                      Vocabularies::Snpo.clinical_significance,
+                                                      'Benign'))
+
+            is_expected.to include(RDF::Statement.new(refsnp_uri,
+                                                      Vocabularies::Snpo.clinical_significance,
+                                                      'Likely benign'))
+
+            is_expected.to include(RDF::Statement.new(refsnp_uri,
+                                                      Vocabularies::Snpo.hgvs,
+                                                      'NC_000001.10:g.955563G>C'))
+
+            faldo_subjects = subject.select do |statement|
+              statement.subject == refsnp_uri && statement.predicate == Vocabularies::Faldo.location
+            end.map(&:object)
+
+            expect(faldo_subjects.count).to eq(1)
+
+            expect(faldo_subjects.any? do |faldo_subject|
+              subject.include?(RDF::Statement.new(faldo_subject, Vocabularies::Faldo.position, 955563)) &&
+                  subject.include?(RDF::Statement.new(faldo_subject, RDF::type, Vocabularies::Faldo.ExactPosition)) &&
+                  subject.include?(RDF::Statement.new(faldo_subject, Vocabularies::Faldo.reference, RDF::URI.new(PREFIXES[:refseq] + 'NC_000001.10')))
+            end
+            ).to eq(true)
+          end
+        end
       end
     end
   end

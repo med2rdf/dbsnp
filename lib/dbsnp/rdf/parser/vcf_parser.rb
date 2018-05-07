@@ -85,7 +85,7 @@ module DbSNP::RDF::Parser
         variation.frequency             = parse_frequency(additional_information['FREQ']) if additional_information['FREQ']
         variation.reference_sequence    = tokens[0]
         variation.position              = tokens[1]
-        variation.clinical_significance = parse_comma_separated_entries(additional_information['CLNSIG']) if additional_information['CLNSIG']
+        variation.clinical_significance = parse_clinical_significance(additional_information['CLNSIG']) if additional_information['CLNSIG']
         variation.hgvs                  = parse_comma_separated_entries(additional_information['CLNHGVS']) if additional_information['CLNHGVS']
         variation
       rescue ArgumentError => ae
@@ -95,6 +95,12 @@ module DbSNP::RDF::Parser
         line    = line.scrub('?')
         retrial = true
         retry
+      end
+    end
+
+    def parse_clinical_significance(text)
+      parse_comma_separated_entries(text).map do |sig|
+        sig.nil? ? nil : sig.split('|')
       end
     end
 

@@ -33,7 +33,7 @@ module DbSNP::RDF
           Parser::VCFParser.open(@src).each_with_index do |refsnp, i|
             dst_file.write(@writer.buffer(prefixes: DbSNP::RDF::PREFIXES) do |buffer|
               DbSNP::RDF::Converter::VariationToTriples.convert(refsnp).each { |statement| buffer << statement }
-            end.gsub(/^@.*$\n/, '')) #TODO remove prefixes in advance if possible
+            end.gsub(/^@.*$\n/, ''))
             puts "parsed #{i + 1} lines..." if @options[:verbose] && ((i + 1) % @options[:verbose]) == 0
           end
         end

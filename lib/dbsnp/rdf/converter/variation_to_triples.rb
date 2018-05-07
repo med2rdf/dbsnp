@@ -110,10 +110,12 @@ module DbSNP::RDF
           end
 
 
-          if variation.clinical_significance && CLINICAL_SIGNIFICANCE_MAP[variation.clinical_significance[idx + 1]]
-            statements << RDF::Statement.new(subject,
-                                             Vocabularies::Snpo.clinical_significance,
-                                             CLINICAL_SIGNIFICANCE_MAP[variation.clinical_significance[idx + 1]])
+          if variation.clinical_significance && !variation.clinical_significance[idx + 1].nil?
+            variation.clinical_significance[idx + 1].each do |sig|
+              statements << RDF::Statement.new(subject,
+                                               Vocabularies::Snpo.clinical_significance,
+                                               CLINICAL_SIGNIFICANCE_MAP[sig])
+            end
           end
 
 
@@ -172,7 +174,6 @@ module DbSNP::RDF
             statements << RDF::Statement.new(begin_node,
                                              Vocabularies::Faldo.reference,
                                              reference_uri)
-
 
             end_node = RDF::Node.new
 
@@ -254,7 +255,13 @@ module DbSNP::RDF
 
         def validate(variation)
           CLASS_OBO_MAP.key?(variation.variation_class) &&
-            (variation.clinical_significance.nil? || variation.clinical_significance.all?{ |sig| sig.nil? || CLINICAL_SIGNIFICANCE_MAP.key?(sig) })
+              (variation.clinical_significance.nil? || validate_clinsig(variation.clinical_significance))
+        end
+
+        def validate_clinsig(clinsig)
+          clinsig.all? do |sigs|
+            sigs.nil? || sigs.all? { |sig| CLINICAL_SIGNIFICANCE_MAP.key?(sig) }
+          end
         end
       end
     end

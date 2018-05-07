@@ -73,7 +73,7 @@ module DbSNP::RDF::Parser
           expect(variation.frequency).to eq(['0.9966', nil, '0.003395'])
           expect(variation.reference_sequence).to eq('NC_000001.11')
           expect(variation.position).to eq('1014217')
-          expect(variation.clinical_significance).to eq([nil, nil, '2'])
+          expect(variation.clinical_significance).to eq([nil, nil, ['2']])
           expect(variation.hgvs).to eq(['NC_000001.11:g.1014217C=', 'NC_000001.11:g.1014217C>G', 'NC_000001.11:g.1014217C>T'])
         end
       end
