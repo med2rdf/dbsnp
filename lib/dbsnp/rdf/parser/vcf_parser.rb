@@ -19,6 +19,7 @@ module DbSNP::RDF::Parser
     end
 
     def initialize(io)
+      #TODO close file
       @file_path = io.is_a?(File) ? io.path : 'StringIO'
       @io = io.is_a?(String) ? StringIO.new(io) : io
     end

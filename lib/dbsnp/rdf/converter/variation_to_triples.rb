@@ -7,7 +7,7 @@ module DbSNP::RDF
 
     class ValidationError < StandardError
       def initialize(variant_call)
-        super("invalid variation: #{variation}")
+        super("invalid variation: #{variant_call}")
       end
     end
 
@@ -248,7 +248,8 @@ module DbSNP::RDF
         end
 
         def validate(variation)
-          CLASS_OBO_MAP.key?(variation.variation_class)
+          CLASS_OBO_MAP.key?(variation.variation_class) &&
+            (variation.clinical_significance.nil? || variation.clinical_significance.all?{ |sig| sig.nil? || CLINICAL_SIGNIFICANCE_MAP.key?(sig) })
         end
       end
     end

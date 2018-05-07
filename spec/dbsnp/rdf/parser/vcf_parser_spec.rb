@@ -57,7 +57,7 @@ module DbSNP::RDF::Parser
 
 
       context 'for a line of rs61766284' do
-        let(:text) { File.read(File.join('spec', 'examples', 'vcf', 'rs61766284')) }
+        let(:text) { File.read(File.join('spec', 'examples', 'vcf', 'rs61766284.vcf')) }
 
         it { is_expected.to be_a(Enumerator) }
 
