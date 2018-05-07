@@ -19,6 +19,7 @@ module DbSNP::RDF::Parser
     end
 
     def initialize(io)
+      @file_path = io.is_a?(File) ? io.path : 'StringIO'
       @io = io.is_a?(String) ? StringIO.new(io) : io
     end
 
@@ -31,8 +32,10 @@ module DbSNP::RDF::Parser
 
     def each
       if block_given?
+        lineno = 0 #TODO delegate lineno to @io
         @io.each_line do |line|
-          variation = parse_line(line)
+          lineno += 1
+          variation = parse_line(line, lineno)
           yield variation if variation
         end
       else
@@ -42,27 +45,37 @@ module DbSNP::RDF::Parser
 
     private
 
-    def parse_line(line)
-      return nil if line.start_with?('#') || line.empty?
-      tokens                 = line.split(COLUMN_DELIMITER).map(&:strip)
-      variation              = Variation.new
-      additional_information = parse_additional_part(tokens[7])
+    def parse_line(line, lineno)
+      retrial = false
+      begin
+        return nil if line.start_with?('#') || line.empty?
+        tokens                 = line.split(COLUMN_DELIMITER).map(&:strip)
+        variation              = Variation.new
+        additional_information = parse_additional_part(tokens[7])
 
-      variation.rs_id                 = tokens[2]
-      variation.variation_class       = additional_information['VC']
-      if additional_information['GENEINFO']
-        variation.gene_id_list          = additional_information['GENEINFO'].split('|').map{ |pair| pair.split(':')[1]}
-      else
-        variation.gene_id_list        = []
+        variation.rs_id                 = tokens[2]
+        variation.variation_class       = additional_information['VC']
+        if additional_information['GENEINFO']
+          variation.gene_id_list          = additional_information['GENEINFO'].split('|').map{ |pair| pair.split(':')[1]}
+        else
+          variation.gene_id_list        = []
+        end
+        variation.reference_allele      = tokens[3]
+        variation.alternative_alleles   = tokens[4].split(',')
+        variation.frequency             = parse_frequency(additional_information['FREQ']) if additional_information['FREQ']
+        variation.reference_sequence    = tokens[0]
+        variation.position              = tokens[1]
+        variation.clinical_significance = parse_comma_separated_entries(additional_information['CLNSIG']) if additional_information['CLNSIG']
+        variation.hgvs                  = parse_comma_separated_entries(additional_information['CLNHGVS']) if additional_information['CLNHGVS']
+        variation
+      rescue ArgumentError => ae
+        raise ae if retrial
+
+        warn(["Warning: #{ae.message}, #{@file_path}:#{lineno}", line].join("\n"))
+        line    = line.scrub('?')
+        retrial = true
+        retry
       end
-      variation.reference_allele      = tokens[3]
-      variation.alternative_alleles   = tokens[4].split(',')
-      variation.frequency             = parse_frequency(additional_information['FREQ']) if additional_information['FREQ']
-      variation.reference_sequence    = tokens[0]
-      variation.position              = tokens[1]
-      variation.clinical_significance = parse_comma_separated_entries(additional_information['CLNSIG']) if additional_information['CLNSIG']
-      variation.hgvs                  = parse_comma_separated_entries(additional_information['CLNHGVS']) if additional_information['CLNHGVS']
-      variation
     end
 
     def parse_comma_separated_entries(text)

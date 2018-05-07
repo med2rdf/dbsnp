@@ -85,6 +85,18 @@ module DbSNP::RDF::Parser
 
         it { expect(subject.to_a.count).to eq(0) }
       end
+
+
+      context 'for a line with invalid bytes' do
+        let(:text) { (%w[NC_000001.10 10019 rs775809821 TA T . . RS=775809821;dbSNPBuildID=144;SSR=0;PSEUDOGENEINFO=DDX11L1:100287102;VC=INDEL].join("\t") + 0xff.chr).force_encoding('UTF-8') }
+
+        it { is_expected.to be_a(Enumerator) }
+
+        it { expect(subject.to_a.count).to eq(1) }
+
+        it { expect{ subject.to_a }.to output.to_stderr }
+      end
+
     end
 
     describe '#open' do
