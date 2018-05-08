@@ -31,6 +31,7 @@ module DbSNP
 
     module Parser
       autoload :VCFParser, 'dbsnp/rdf/parser/vcf_parser'
+      autoload :EntrySplitter, 'dbsnp/rdf/parser/entry_splitter'
     end
 
     module Vocabularies

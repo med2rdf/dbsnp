@@ -1,3 +1,6 @@
+require 'parallel'
+require 'benchmark'
+
 module DbSNP::RDF
   module Generator
     class TurtleGenerator
@@ -30,11 +33,26 @@ module DbSNP::RDF
           dst_file.write(@writer.buffer(prefixes: DbSNP::RDF::PREFIXES, stream: true) do |buffer|
             # just output header
           end)
-          Parser::VCFParser.open(@src).each_with_index do |refsnp, i|
-            dst_file.write(@writer.buffer(prefixes: DbSNP::RDF::PREFIXES) do |buffer|
-              DbSNP::RDF::Converter::VariationToTriples.convert(refsnp).each { |statement| buffer << statement }
-            end.gsub(/^@.*$\n/, ''))
-            puts "parsed #{i + 1} lines..." if @options[:verbose] && ((i + 1) % @options[:verbose]) == 0
+          dst_file.flush
+          main_slice   = 10000
+          sub_slice    = 1000
+          parsed_count = 0
+          Parser::EntrySplitter.open(@src).each_slice(main_slice) do |entry_group|
+            sub_entry_groups = entry_group.each_slice(sub_slice).to_a
+            buffers          = Parallel.map(sub_entry_groups, in_processes: 10) do |sub_entry_group|
+              statements = []
+              sub_entry_group.each do |entry|
+                statements += DbSNP::RDF::Converter::VariationToTriples.convert(Parser::VCFParser.parse(entry))
+              end
+              @writer.buffer(prefixes: DbSNP::RDF::PREFIXES) do |buffer|
+                statements.each { |statement| buffer << statement }
+              end.gsub(/^@.*$\n/, '')
+            end
+
+            buffers.each { |buffer| dst_file.write(buffer) }
+            parsed_count += main_slice
+            puts "parsed #{parsed_count} lines..."
+            # puts "parsed #{i + 1} lines..." if @options[:verbose] && ((i + 1) % @options[:verbose]) == 0
           end
         end
       end
