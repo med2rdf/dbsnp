@@ -22,7 +22,28 @@ Or install it yourself as:
 
 ## Usage
 
-TODO: Write usage instructions here
+    $ ./bin/dbsnp-rdf <input> <output>
+    
+Input: dbSNP entry (in pipe-separated values)
+
+Output: RDF triples (in turtle format)
+
+## Installation of Raptor RDF Library (Optional)
+
+Raptor accelerates serialization of entries.
+
+### For macOS
+
+The latest Raptor (2.0.15) seems not to be compatible with ruby-rdf/rdf-raptor, so please install Raptor 2.0.13:
+
+    $ brew unlink raptor # necessary only if you have already installed RAptor
+    $ brew install ./scripts/raptor.rb
+
+Here Homebrew is assumed to have been installed.
+
+### For Ubuntu
+    
+    $ sudo apt-get install libraptor2-0
 
 ## Development
 
