@@ -7,13 +7,17 @@ module DbSNP::RDF
   module Generator
     class TurtleGenerator
       def initialize(src_path, dst_path, options = {})
-        @writer = ::RDF::Writer.for(:turtle)
-
         @src = src_path
 
         @dst = dst_path
 
         @options = options
+
+        if @options[:raptor]
+          @writer = RDF::Raptor::Turtle::Writer
+        else
+          @writer = RDF::Turtle::Writer
+        end
       end
 
       def all
@@ -36,7 +40,7 @@ module DbSNP::RDF
             # just output header
           end)
           dst_file.flush
-          slice_size   = @options[:slice_size] || 10000
+          slice_size   = @options[:slice] || 10000
           entry_count = 0
           time_sum = 0
           Parser::EntrySplitter.open(@src).each_slice(slice_size) do |entries|
@@ -49,7 +53,7 @@ module DbSNP::RDF
       end
 
       def serialize_parallel(entries)
-        process_count = @options[:process_num] || 4
+        process_count = @options[:process] || 4
         if process_count == 1
           [serialize(entries)]
         else

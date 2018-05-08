@@ -7,9 +7,8 @@ module DbSNP
       class Convert
 
         DEFAULT_OPTIONS = {
-            output_dir: ENV['DATA_DIR'] || ENV['PWD'],
-            help:   false,
-            verbose: false
+            dst:  ENV['DATA_DIR'] || ENV['PWD'],
+            help: false
         }.freeze
 
         def initialize
@@ -52,22 +51,32 @@ module DbSNP
             op.separator("\nOptions:")
             op.on('-h', '--help', 'show help') do
               @options[:help] = true
-              puts 'help'
             end
-            op.on('-v', '--verbose [INTERVAL]', OptionParser::DecimalInteger,
-                  'show count of parsed variation lines in progress',
-                  'The output interval can be specified as an integer (equals 100 by default).') do |itv|
-              @options[:verbose] = itv || 100
+            op.on('-s', '--slice [SIZE]',
+                  'size of each slice in parallel processing of variations (default: 10000)') do |slice|
+              @options[:slice] = slice.to_i
             end
+
+            op.on('-p', '--process [NUMBER]',
+                  'number of processes to use (default: 4)') do |number|
+              @options[:process] = number.to_i
+            end
+
+            op.on('-r', '--raptor',
+                  'use Raptor serializer instead of the pure ruby serializer',
+                  'NOTE: make sure that Raptor is installed on your system') do |number|
+              @options[:raptor] = true
+            end
+
             op.separator('')
           end
         end
 
         def validate_arguments
-          verbose = @options[:verbose]
-          raise OptionParser::InvalidOption.new("INTERVAL of verbose must be positive integer") if verbose && verbose <= 0
+          raise OptionParser::InvalidArgument.new("--process must be positive integer") if @options[:process] && @options[:process] <= 0
+          raise OptionParser::InvalidArgument.new("--slice must be positive integer") if @options[:slice] && @options[:slice] <= 0
 
-          raise OptionParser::InvalidOption.new("src and dst must be specified") if ARGV.size < 2
+          raise OptionParser::InvalidArgument.new("src and dst must be specified") if ARGV.size < 2
           src, dst = ARGV
           raise OptionParser::InvalidArgument.new("#{src} must not be a directory.") if File.directory?(src)
           raise OptionParser::InvalidArgument.new("#{src} does not exist.") unless File.exist?(src)
