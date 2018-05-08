@@ -32,6 +32,7 @@ Gem::Specification.new do |spec|
   spec.add_dependency "activesupport", "~> 5.2"
   spec.add_dependency "parallel", "~> 1.12.1"
   spec.add_dependency "rdf", "~> 3.0.1"
+  spec.add_dependency "rdf-raptor", "~> 2.2.0"
   spec.add_dependency "rdf-vocab", "~>3.0.1"
   spec.add_dependency "rdf-turtle", "~>3.0.1"
 end

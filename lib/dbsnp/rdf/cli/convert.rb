@@ -1,6 +1,5 @@
 require 'optparse'
 require 'rdf'
-require 'rdf/turtle'
 
 module DbSNP
   module RDF

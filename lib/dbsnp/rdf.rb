@@ -15,7 +15,7 @@ module DbSNP
         tax:       'http://identifiers.org/taxonomy/',
         obo:       'http://purl.obolibrary.org/obo/',
         faldo:     'http://biohackathon.org/resource/faldo#',
-        rdf:       ::RDF::RDFV.to_s,
+        #rdf:       ::RDF::RDFV.to_s,
         dc:        ::RDF::Vocab::DC.to_s,
         xsd:       ::RDF::XSD.to_s,
     }.freeze

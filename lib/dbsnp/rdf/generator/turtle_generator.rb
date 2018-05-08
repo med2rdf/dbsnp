@@ -1,5 +1,7 @@
 require 'parallel'
 require 'benchmark'
+require 'rdf/turtle'
+require 'rdf/raptor'
 
 module DbSNP::RDF
   module Generator
@@ -34,27 +36,35 @@ module DbSNP::RDF
             # just output header
           end)
           dst_file.flush
-          main_slice   = 10000
-          sub_slice    = 1000
-          parsed_count = 0
-          Parser::EntrySplitter.open(@src).each_slice(main_slice) do |entry_group|
-            sub_entry_groups = entry_group.each_slice(sub_slice).to_a
-            buffers          = Parallel.map(sub_entry_groups, in_processes: 10) do |sub_entry_group|
-              statements = []
-              sub_entry_group.each do |entry|
-                statements += DbSNP::RDF::Converter::VariationToTriples.convert(Parser::VCFParser.parse(entry))
-              end
-              @writer.buffer(prefixes: DbSNP::RDF::PREFIXES) do |buffer|
-                statements.each { |statement| buffer << statement }
-              end.gsub(/^@.*$\n/, '')
-            end
-
-            buffers.each { |buffer| dst_file.write(buffer) }
-            parsed_count += main_slice
-            puts "parsed #{parsed_count} lines..."
-            # puts "parsed #{i + 1} lines..." if @options[:verbose] && ((i + 1) % @options[:verbose]) == 0
+          slice_size   = @options[:slice_size] || 10000
+          entry_count = 0
+          time_sum = 0
+          Parser::EntrySplitter.open(@src).each_slice(slice_size) do |entries|
+            time = Benchmark.realtime{ serialize_parallel(entries).each { |ttl_text| dst_file.write(ttl_text) } }
+            entry_count += entries.size
+            time_sum += time
+            puts "#{entry_count} entries were processed... (this block: #{time} sec, sum: #{time_sum} sec)"
           end
         end
+      end
+
+      def serialize_parallel(entries)
+        process_count = @options[:process_num] || 4
+        if process_count == 1
+          [serialize(entries)]
+        else
+          sub_slice = entries.length / process_count
+          Parallel.map(entries.each_slice(sub_slice).to_a, in_processes: process_count) do |sub_entry_group|
+            serialize(sub_entry_group)
+          end
+        end
+      end
+
+      def serialize(entries)
+        statements = entries.map { |entry| DbSNP::RDF::Converter::VariationToTriples.convert(Parser::VCFParser.parse(entry)) }.flatten
+        @writer.buffer(prefixes: DbSNP::RDF::PREFIXES) do |writer|
+          statements.each { |statement| writer << statement }
+        end.gsub(/^@.*$\n/, '')
       end
     end
   end
