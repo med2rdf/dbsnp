@@ -26,18 +26,18 @@ module DbSNP::RDF
       end
 
       def ontology
-        LOGGER.info('ontology started...')
+        LOGGER.info('generating dbsnp.ttl...')
         File.open(File.join(@dst, 'dbsnp.ttl'), 'w') do |dst_file|
           dst_file.write(@writer.buffer(prefixes: Vocabularies::DbSNP.prefixes, stream: true) do |buffer|
             # just output header
           end)
           dst_file.write((Vocabularies::DbSNP.to_ttl).gsub(/^@.*$\n/, ''))
         end
-        LOGGER.info('ontology completed')
+        LOGGER.info('dbsnp.ttl is completed')
       end
 
       def refsnps
-        LOGGER.info('refsnps started...')
+        LOGGER.info('generating refsnps.ttl...')
         File.open(File.join(@dst, 'refsnps.ttl'), 'w') do |dst_file|
           dst_file.write(@writer.buffer(prefixes: DbSNP::RDF::PREFIXES, stream: true) do |buffer|
             # just output header
@@ -53,7 +53,7 @@ module DbSNP::RDF
             LOGGER.info("#{entry_count} entries were processed... (slice: #{time.round(2)} sec, sum: #{time_sum.round(2)} sec)")
           end
         end
-        LOGGER.info('refsnps completed')
+        LOGGER.info('refsnps.ttl is completed')
       end
 
       def serialize_parallel(entries)
