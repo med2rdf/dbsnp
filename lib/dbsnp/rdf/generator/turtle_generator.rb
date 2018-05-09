@@ -57,7 +57,7 @@ module DbSNP::RDF
       end
 
       def serialize_parallel(entries)
-        process_count = @options[:process] || 4
+        process_count = @options[:process] || 1
         if process_count == 1
           [serialize(entries)]
         else

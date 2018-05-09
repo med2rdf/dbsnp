@@ -58,7 +58,7 @@ module DbSNP
             end
 
             op.on('-p', '--process [NUMBER]',
-                  'number of processes to use (default: 4)') do |number|
+                  'number of processes to use (default: 1)') do |number|
               @options[:process] = number.to_i
             end
 
