@@ -36,7 +36,7 @@ Raptor accelerates serialization of entries.
 
 The latest Raptor (2.0.15) seems not to be compatible with ruby-rdf/rdf-raptor, so please install Raptor 2.0.13:
 
-    $ brew unlink raptor # necessary only if you have already installed RAptor
+    $ brew unlink raptor # necessary only if you have already installed Raptor
     $ brew install ./scripts/raptor.rb
 
 Here Homebrew is assumed to have been installed.
