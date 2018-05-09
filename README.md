@@ -22,11 +22,15 @@ Or install it yourself as:
 
 ## Usage
 
-    $ ./bin/dbsnp-rdf <input> <output>
+    $ ./bin/dbsnp-rdf convert <input> <output>
     
 Input: dbSNP entry (in pipe-separated values)
 
 Output: RDF triples (in turtle format)
+
+For further options, execute:
+
+    $ ./bin/dbsnp-rdf convert --help
 
 ## Installation of Raptor RDF Library (Optional)
 
