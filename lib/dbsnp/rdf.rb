@@ -26,6 +26,7 @@ module DbSNP
     end
 
     module Converter
+      autoload :ValidationError, 'dbsnp/rdf/converter/variation_to_triples'
       autoload :VariationToTriples, 'dbsnp/rdf/converter/variation_to_triples'
     end
 

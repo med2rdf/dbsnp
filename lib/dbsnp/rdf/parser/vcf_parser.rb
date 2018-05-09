@@ -53,7 +53,7 @@ module DbSNP::RDF::Parser
 
       def parse_clinical_significance(text)
         parse_comma_separated_entries(text).map do |sig|
-          sig.nil? ? nil : sig.split('|')
+          sig.nil? ? nil : sig.split(/\||\//).uniq
         end
       end
 
