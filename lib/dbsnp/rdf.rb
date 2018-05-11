@@ -22,6 +22,11 @@ module DbSNP
 
     LOGGER = Logger.new(STDOUT)
 
+    autoload :M2r, 'dbsnp/rdf/vocabularies'
+    autoload :Obo, 'dbsnp/rdf/vocabularies'
+    autoload :Faldo, 'dbsnp/rdf/vocabularies'
+    autoload :SNPO, 'dbsnp/rdf/vocabularies'
+
     module CLI
       autoload :Runner, 'dbsnp/rdf/cli/runner'
       autoload :Convert, 'dbsnp/rdf/cli/convert'
@@ -37,12 +42,6 @@ module DbSNP
       autoload :EntrySplitter, 'dbsnp/rdf/parser/entry_splitter'
     end
 
-    module Vocabularies
-      autoload :M2r, 'dbsnp/rdf/vocabularies'
-      autoload :Obo, 'dbsnp/rdf/vocabularies'
-      autoload :Faldo, 'dbsnp/rdf/vocabularies'
-      autoload :SNPO, 'dbsnp/rdf/vocabularies'
-    end
 
     module Generator
       autoload :TurtleGenerator, 'dbsnp/rdf/generator/turtle_generator'

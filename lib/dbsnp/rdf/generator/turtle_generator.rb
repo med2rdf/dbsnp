@@ -28,10 +28,10 @@ module DbSNP::RDF
       def ontology
         LOGGER.info('generating dbsnp.ttl...')
         File.open(File.join(@dst, 'dbsnp.ttl'), 'w') do |dst_file|
-          dst_file.write(@writer.buffer(prefixes: Vocabularies::SNPO.prefixes, stream: true) do |buffer|
+          dst_file.write(@writer.buffer(prefixes: SNPO.prefixes, stream: true) do |buffer|
             # just output header
           end)
-          dst_file.write((Vocabularies::SNPO.to_ttl).gsub(/^@.*$\n/, ''))
+          dst_file.write((SNPO.to_ttl).gsub(/^@.*$\n/, ''))
         end
         LOGGER.info('dbsnp.ttl is completed')
       end

@@ -12,21 +12,21 @@ module DbSNP::RDF
     end
 
     CLASS_OBO_MAP = {
-        'SNV'   => Vocabularies::Obo.SO_0001483,
-        'INDEL' => Vocabularies::Obo.SO_1000032,
-        'INS'   => Vocabularies::Obo.SO_0000667,
-        'DEL'   => Vocabularies::Obo.SO_0000159,
-        'MNV'   => Vocabularies::Obo.SO_0002007,
+        'SNV'   => Obo.SO_0001483,
+        'INDEL' => Obo.SO_1000032,
+        'INS'   => Obo.SO_0000667,
+        'DEL'   => Obo.SO_0000159,
+        'MNV'   => Obo.SO_0002007,
     }.freeze
 
     FREQUENCY_STUDY_TERM_MAP = {
-        '1000Genomes'  => Vocabularies::SNPO.send('1000GenomesFrequency'),
-        'ALSPAC'       => Vocabularies::SNPO.AlspacFrequency,
-        'ESP6500SI-V2' => Vocabularies::SNPO.EspFrequency,
-        'ExAC'         => Vocabularies::SNPO.ExacFrequency,
-        'GnomAD'       => Vocabularies::SNPO.GnomadFrequency,
-        'TOPMED'       => Vocabularies::SNPO.TopmedFrequency,
-        'TWINSUK'      => Vocabularies::SNPO.TwinsukFrequency
+        '1000Genomes'  => SNPO.send('1000GenomesFrequency'),
+        'ALSPAC'       => SNPO.AlspacFrequency,
+        'ESP6500SI-V2' => SNPO.EspFrequency,
+        'ExAC'         => SNPO.ExacFrequency,
+        'GnomAD'       => SNPO.GnomadFrequency,
+        'TOPMED'       => SNPO.TopmedFrequency,
+        'TWINSUK'      => SNPO.TwinsukFrequency
     }.freeze
 
     CLINICAL_SIGNIFICANCE_MAP = {
@@ -63,7 +63,7 @@ module DbSNP::RDF
 
             statements << RDF::Statement.new(subject,
                                              ::RDF::type,
-                                             Vocabularies::M2r.Variation)
+                                             M2r.Variation)
 
 
             variation.alternative_alleles.each_with_index do |alt, i|
@@ -87,7 +87,7 @@ module DbSNP::RDF
 
           statements << RDF::Statement.new(subject,
                                            ::RDF::type,
-                                           Vocabularies::M2r.Variation)
+                                           M2r.Variation)
 
           unless CLASS_OBO_MAP[variation.variation_class].nil?
             statements << RDF::Statement.new(subject,
@@ -96,21 +96,21 @@ module DbSNP::RDF
           end
 
           statements << RDF::Statement.new(subject,
-                                           Vocabularies::SNPO.taxonomy,
+                                           SNPO.taxonomy,
                                            RDF::URI.new(PREFIXES[:tax] + '9606'))
 
           variation.gene_id_list.each do |gene_id|
             statements << RDF::Statement.new(subject,
-                                             Vocabularies::M2r.gene,
+                                             M2r.gene,
                                              RDF::URI.new(PREFIXES[:ncbi_gene] + gene_id))
           end
 
           statements << RDF::Statement.new(subject,
-                                           Vocabularies::M2r.reference_allele,
+                                           M2r.reference_allele,
                                            variation.reference_allele)
 
           statements << RDF::Statement.new(subject,
-                                           Vocabularies::M2r.alternative_allele,
+                                           M2r.alternative_allele,
                                            alt)
 
           if variation.frequency
@@ -118,12 +118,12 @@ module DbSNP::RDF
               next if values[idx + 1].nil?
               frequency_node = RDF::Node.new
               statements << RDF::Statement.new(subject,
-                                               Vocabularies::SNPO.frequency,
+                                               SNPO.frequency,
                                                frequency_node)
 
               statements << RDF::Statement.new(frequency_node,
                                                RDF::type,
-                                               Vocabularies::SNPO.Frequency)
+                                               SNPO.Frequency)
 
               statements << RDF::Statement.new(frequency_node,
                                                RDF::type,
@@ -140,7 +140,7 @@ module DbSNP::RDF
           if variation.clinical_significance && !variation.clinical_significance[idx + 1].nil?
             variation.clinical_significance[idx + 1].each do |sig|
               statements << RDF::Statement.new(subject,
-                                               Vocabularies::SNPO.clinical_significance,
+                                               SNPO.clinical_significance,
                                                CLINICAL_SIGNIFICANCE_MAP[sig])
             end
           end
@@ -149,76 +149,76 @@ module DbSNP::RDF
           if variation.hgvs && variation.hgvs[idx + 1]
             # use hgvs in VCF
             statements << RDF::Statement.new(subject,
-                                             Vocabularies::SNPO.hgvs,
+                                             SNPO.hgvs,
                                              variation.hgvs[idx + 1])
           else
             # construct hgvs
             statements << RDF::Statement.new(subject,
-                                             Vocabularies::SNPO.hgvs,
+                                             SNPO.hgvs,
                                              "#{variation.reference_sequence}:g.#{hgvs_change(variation, alt)}")
           end
 
 
           location_node = RDF::Node.new
           statements << RDF::Statement.new(subject,
-                                           Vocabularies::Faldo.location,
+                                           Faldo.location,
                                            location_node)
 
 
           reference_uri = RDF::URI.new(PREFIXES[:refseq] + variation.reference_sequence)
           if variation.reference_allele.length == 1
             statements << RDF::Statement.new(location_node,
-                                             Vocabularies::Faldo.position,
+                                             Faldo.position,
                                              variation.position.to_i)
 
             statements << RDF::Statement.new(location_node,
                                              RDF::type,
-                                             Vocabularies::Faldo.ExactPosition)
+                                             Faldo.ExactPosition)
 
             statements << RDF::Statement.new(location_node,
-                                             Vocabularies::Faldo.reference,
+                                             Faldo.reference,
                                              reference_uri)
           else
             statements << RDF::Statement.new(location_node,
                                              RDF::type,
-                                             Vocabularies::Faldo.Region)
+                                             Faldo.Region)
 
             begin_node = RDF::Node.new
 
 
             statements << RDF::Statement.new(location_node,
-                                             Vocabularies::Faldo.begin,
+                                             Faldo.begin,
                                              begin_node)
 
             statements << RDF::Statement.new(begin_node,
                                              RDF::type,
-                                             Vocabularies::Faldo.ExactPosition)
+                                             Faldo.ExactPosition)
 
             statements << RDF::Statement.new(begin_node,
-                                             Vocabularies::Faldo.position,
+                                             Faldo.position,
                                              variation.position.to_i)
 
             statements << RDF::Statement.new(begin_node,
-                                             Vocabularies::Faldo.reference,
+                                             Faldo.reference,
                                              reference_uri)
 
             end_node = RDF::Node.new
 
 
             statements << RDF::Statement.new(location_node,
-                                             Vocabularies::Faldo.end,
+                                             Faldo.end,
                                              end_node)
 
             statements << RDF::Statement.new(end_node,
                                              RDF::type,
-                                             Vocabularies::Faldo.ExactPosition)
+                                             Faldo.ExactPosition)
 
             statements << RDF::Statement.new(end_node,
-                                             Vocabularies::Faldo.position,
+                                             Faldo.position,
                                              variation.position.to_i + variation.reference_allele.length - 1)
 
             statements << RDF::Statement.new(end_node,
-                                             Vocabularies::Faldo.reference,
+                                             Faldo.reference,
                                              reference_uri)
           end
 

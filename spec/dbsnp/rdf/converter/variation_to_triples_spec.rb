@@ -29,51 +29,51 @@ module DbSNP::RDF
 
               is_expected.to include(RDF::Statement.new(refsnp_uri,
                                                         RDF::type,
-                                                        Vocabularies::M2r.Variation))
+                                                        M2r.Variation))
 
               is_expected.to include(RDF::Statement.new(refsnp_uri,
                                                         RDF::type,
-                                                        Vocabularies::Obo.SO_1000032))
+                                                        Obo.SO_1000032))
 
               is_expected.to include(RDF::Statement.new(refsnp_uri,
-                                                        Vocabularies::SNPO.taxonomy,
+                                                        SNPO.taxonomy,
                                                         RDF::URI.new(PREFIXES[:tax] + '9606')))
 
               is_expected.to include(RDF::Statement.new(refsnp_uri,
-                                                        Vocabularies::M2r.reference_allele,
+                                                        M2r.reference_allele,
                                                         'TA'))
 
               is_expected.to include(RDF::Statement.new(refsnp_uri,
-                                                        Vocabularies::M2r.alternative_allele,
+                                                        M2r.alternative_allele,
                                                         'T'))
 
               is_expected.to include(RDF::Statement.new(refsnp_uri,
-                                                        Vocabularies::SNPO.hgvs,
+                                                        SNPO.hgvs,
                                                         'NC_000001.10:g.10020delA'))
 
               faldo_nodes = subject.select do |statement|
-                statement.subject == refsnp_uri && statement.predicate == Vocabularies::Faldo.location
+                statement.subject == refsnp_uri && statement.predicate == Faldo.location
               end.map(&:object)
 
               expect(faldo_nodes.count).to eq(1)
 
               expect(faldo_nodes.any? do |faldo_node|
                 begin_subject = subject.select do |statement|
-                  statement.subject == faldo_node && statement.predicate == Vocabularies::Faldo.begin
+                  statement.subject == faldo_node && statement.predicate == Faldo.begin
                 end[0].object
 
                 end_subject = subject.select do |statement|
-                  statement.subject == faldo_node && statement.predicate == Vocabularies::Faldo.end
+                  statement.subject == faldo_node && statement.predicate == Faldo.end
                 end[0].object
-                subject.include?(RDF::Statement.new(faldo_node, RDF::type, Vocabularies::Faldo.Region)) &&
-                    subject.include?(RDF::Statement.new(faldo_node, Vocabularies::Faldo.begin, begin_subject)) &&
-                    subject.include?(RDF::Statement.new(begin_subject, RDF::type, Vocabularies::Faldo.ExactPosition)) &&
-                    subject.include?(RDF::Statement.new(begin_subject, Vocabularies::Faldo.position, 10019)) &&
-                    subject.include?(RDF::Statement.new(begin_subject, Vocabularies::Faldo.reference, RDF::URI.new(PREFIXES[:refseq] + 'NC_000001.10'))) &&
-                    subject.include?(RDF::Statement.new(faldo_node, Vocabularies::Faldo.end, end_subject)) &&
-                    subject.include?(RDF::Statement.new(end_subject, RDF::type, Vocabularies::Faldo.ExactPosition)) &&
-                    subject.include?(RDF::Statement.new(end_subject, Vocabularies::Faldo.position, 10020)) &&
-                    subject.include?(RDF::Statement.new(end_subject, Vocabularies::Faldo.reference, RDF::URI.new(PREFIXES[:refseq] + 'NC_000001.10')))
+                subject.include?(RDF::Statement.new(faldo_node, RDF::type, Faldo.Region)) &&
+                    subject.include?(RDF::Statement.new(faldo_node, Faldo.begin, begin_subject)) &&
+                    subject.include?(RDF::Statement.new(begin_subject, RDF::type, Faldo.ExactPosition)) &&
+                    subject.include?(RDF::Statement.new(begin_subject, Faldo.position, 10019)) &&
+                    subject.include?(RDF::Statement.new(begin_subject, Faldo.reference, RDF::URI.new(PREFIXES[:refseq] + 'NC_000001.10'))) &&
+                    subject.include?(RDF::Statement.new(faldo_node, Faldo.end, end_subject)) &&
+                    subject.include?(RDF::Statement.new(end_subject, RDF::type, Faldo.ExactPosition)) &&
+                    subject.include?(RDF::Statement.new(end_subject, Faldo.position, 10020)) &&
+                    subject.include?(RDF::Statement.new(end_subject, Faldo.reference, RDF::URI.new(PREFIXES[:refseq] + 'NC_000001.10')))
               end
               ).to eq(true)
             end
@@ -91,38 +91,38 @@ module DbSNP::RDF
 
               is_expected.to include(RDF::Statement.new(refsnp_uri,
                                                         RDF::type,
-                                                        Vocabularies::M2r.Variation))
+                                                        M2r.Variation))
 
               is_expected.to include(RDF::Statement.new(refsnp_uri,
                                                         RDF::type,
-                                                        Vocabularies::Obo.SO_0001483))
+                                                        Obo.SO_0001483))
 
               is_expected.to include(RDF::Statement.new(refsnp_uri,
-                                                        Vocabularies::SNPO.taxonomy,
+                                                        SNPO.taxonomy,
                                                         RDF::URI.new(PREFIXES[:tax] + '9606')))
 
               is_expected.to include(RDF::Statement.new(refsnp_uri,
-                                                        Vocabularies::M2r.reference_allele,
+                                                        M2r.reference_allele,
                                                         'A'))
 
               is_expected.to include(RDF::Statement.new(refsnp_uri,
-                                                        Vocabularies::M2r.alternative_allele,
+                                                        M2r.alternative_allele,
                                                         'C'))
 
               is_expected.to include(RDF::Statement.new(refsnp_uri,
-                                                        Vocabularies::SNPO.hgvs,
+                                                        SNPO.hgvs,
                                                         'NC_000001.10:g.10039A>C'))
 
               faldo_nodes = subject.select do |statement|
-                statement.subject == refsnp_uri && statement.predicate == Vocabularies::Faldo.location
+                statement.subject == refsnp_uri && statement.predicate == Faldo.location
               end.map(&:object)
 
               expect(faldo_nodes.count).to eq(1)
 
               expect(faldo_nodes.any? do |faldo_node|
-                subject.include?(RDF::Statement.new(faldo_node, Vocabularies::Faldo.position, 10039)) &&
-                    subject.include?(RDF::Statement.new(faldo_node, RDF::type, Vocabularies::Faldo.ExactPosition)) &&
-                    subject.include?(RDF::Statement.new(faldo_node, Vocabularies::Faldo.reference, RDF::URI.new(PREFIXES[:refseq] + 'NC_000001.10')))
+                subject.include?(RDF::Statement.new(faldo_node, Faldo.position, 10039)) &&
+                    subject.include?(RDF::Statement.new(faldo_node, RDF::type, Faldo.ExactPosition)) &&
+                    subject.include?(RDF::Statement.new(faldo_node, Faldo.reference, RDF::URI.new(PREFIXES[:refseq] + 'NC_000001.10')))
               end
               ).to eq(true)
 
@@ -140,38 +140,38 @@ module DbSNP::RDF
 
               is_expected.to include(RDF::Statement.new(refsnp_uri,
                                                         RDF::type,
-                                                        Vocabularies::M2r.Variation))
+                                                        M2r.Variation))
 
               is_expected.to include(RDF::Statement.new(refsnp_uri,
                                                         RDF::type,
-                                                        Vocabularies::Obo.SO_0001483))
+                                                        Obo.SO_0001483))
 
               is_expected.to include(RDF::Statement.new(refsnp_uri,
-                                                        Vocabularies::SNPO.taxonomy,
+                                                        SNPO.taxonomy,
                                                         RDF::URI.new(PREFIXES[:tax] + '9606')))
 
               is_expected.to include(RDF::Statement.new(refsnp_uri,
-                                                        Vocabularies::M2r.reference_allele,
+                                                        M2r.reference_allele,
                                                         'T'))
 
               is_expected.to include(RDF::Statement.new(refsnp_uri,
-                                                        Vocabularies::M2r.alternative_allele,
+                                                        M2r.alternative_allele,
                                                         'A'))
 
               is_expected.to include(RDF::Statement.new(refsnp_uri,
-                                                        Vocabularies::SNPO.hgvs,
+                                                        SNPO.hgvs,
                                                         'NC_000001.10:g.10043T>A'))
 
               faldo_nodes = subject.select do |statement|
-                statement.subject == refsnp_uri && statement.predicate == Vocabularies::Faldo.location
+                statement.subject == refsnp_uri && statement.predicate == Faldo.location
               end.map(&:object)
 
               expect(faldo_nodes.count).to eq(1)
 
               expect(faldo_nodes.any? do |faldo_node|
-                subject.include?(RDF::Statement.new(faldo_node, Vocabularies::Faldo.position, 10043)) &&
-                    subject.include?(RDF::Statement.new(faldo_node, RDF::type, Vocabularies::Faldo.ExactPosition)) &&
-                    subject.include?(RDF::Statement.new(faldo_node, Vocabularies::Faldo.reference, RDF::URI.new(PREFIXES[:refseq] + 'NC_000001.10')))
+                subject.include?(RDF::Statement.new(faldo_node, Faldo.position, 10043)) &&
+                    subject.include?(RDF::Statement.new(faldo_node, RDF::type, Faldo.ExactPosition)) &&
+                    subject.include?(RDF::Statement.new(faldo_node, Faldo.reference, RDF::URI.new(PREFIXES[:refseq] + 'NC_000001.10')))
               end
               ).to eq(true)
 
@@ -197,51 +197,51 @@ module DbSNP::RDF
 
               is_expected.to include(RDF::Statement.new(refsnp_uri,
                                                         RDF::type,
-                                                        Vocabularies::M2r.Variation))
+                                                        M2r.Variation))
 
               is_expected.to include(RDF::Statement.new(refsnp_uri,
                                                         RDF::type,
-                                                        Vocabularies::Obo.SO_1000032))
+                                                        Obo.SO_1000032))
 
               is_expected.to include(RDF::Statement.new(refsnp_uri,
-                                                        Vocabularies::SNPO.taxonomy,
+                                                        SNPO.taxonomy,
                                                         RDF::URI.new(PREFIXES[:tax] + '9606')))
 
               is_expected.to include(RDF::Statement.new(refsnp_uri,
-                                                        Vocabularies::M2r.reference_allele,
+                                                        M2r.reference_allele,
                                                         'TAACCCCTAACCCTAACCCTAAACCCTA'))
 
               is_expected.to include(RDF::Statement.new(refsnp_uri,
-                                                        Vocabularies::M2r.alternative_allele,
+                                                        M2r.alternative_allele,
                                                         'T'))
 
               is_expected.to include(RDF::Statement.new(refsnp_uri,
-                                                        Vocabularies::SNPO.hgvs,
+                                                        SNPO.hgvs,
                                                         'NC_000001.11:g.10229_10255delAACCCCTAACCCTAACCCTAAACCCTA'))
 
               faldo_nodes = subject.select do |statement|
-                statement.subject == refsnp_uri && statement.predicate == Vocabularies::Faldo.location
+                statement.subject == refsnp_uri && statement.predicate == Faldo.location
               end.map(&:object)
 
               expect(faldo_nodes.count).to eq(1)
 
               expect(faldo_nodes.any? do |faldo_node|
                 begin_subject = subject.select do |statement|
-                  statement.subject == faldo_node && statement.predicate == Vocabularies::Faldo.begin
+                  statement.subject == faldo_node && statement.predicate == Faldo.begin
                 end[0].object
 
                 end_subject = subject.select do |statement|
-                  statement.subject == faldo_node && statement.predicate == Vocabularies::Faldo.end
+                  statement.subject == faldo_node && statement.predicate == Faldo.end
                 end[0].object
-                subject.include?(RDF::Statement.new(faldo_node, RDF::type, Vocabularies::Faldo.Region)) &&
-                    subject.include?(RDF::Statement.new(faldo_node, Vocabularies::Faldo.begin, begin_subject)) &&
-                    subject.include?(RDF::Statement.new(begin_subject, RDF::type, Vocabularies::Faldo.ExactPosition)) &&
-                    subject.include?(RDF::Statement.new(begin_subject, Vocabularies::Faldo.position, 10228)) &&
-                    subject.include?(RDF::Statement.new(begin_subject, Vocabularies::Faldo.reference, RDF::URI.new(PREFIXES[:refseq] + 'NC_000001.11'))) &&
-                    subject.include?(RDF::Statement.new(faldo_node, Vocabularies::Faldo.end, end_subject)) &&
-                    subject.include?(RDF::Statement.new(end_subject, RDF::type, Vocabularies::Faldo.ExactPosition)) &&
-                    subject.include?(RDF::Statement.new(end_subject, Vocabularies::Faldo.position, 10255)) &&
-                    subject.include?(RDF::Statement.new(end_subject, Vocabularies::Faldo.reference, RDF::URI.new(PREFIXES[:refseq] + 'NC_000001.11')))
+                subject.include?(RDF::Statement.new(faldo_node, RDF::type, Faldo.Region)) &&
+                    subject.include?(RDF::Statement.new(faldo_node, Faldo.begin, begin_subject)) &&
+                    subject.include?(RDF::Statement.new(begin_subject, RDF::type, Faldo.ExactPosition)) &&
+                    subject.include?(RDF::Statement.new(begin_subject, Faldo.position, 10228)) &&
+                    subject.include?(RDF::Statement.new(begin_subject, Faldo.reference, RDF::URI.new(PREFIXES[:refseq] + 'NC_000001.11'))) &&
+                    subject.include?(RDF::Statement.new(faldo_node, Faldo.end, end_subject)) &&
+                    subject.include?(RDF::Statement.new(end_subject, RDF::type, Faldo.ExactPosition)) &&
+                    subject.include?(RDF::Statement.new(end_subject, Faldo.position, 10255)) &&
+                    subject.include?(RDF::Statement.new(end_subject, Faldo.reference, RDF::URI.new(PREFIXES[:refseq] + 'NC_000001.11')))
               end
               ).to eq(true)
             end
@@ -261,42 +261,42 @@ module DbSNP::RDF
 
               is_expected.to include(RDF::Statement.new(refsnp_uri,
                                                         RDF::type,
-                                                        Vocabularies::M2r.Variation))
+                                                        M2r.Variation))
 
               is_expected.to include(RDF::Statement.new(refsnp_uri,
                                                         RDF::type,
-                                                        Vocabularies::Obo.SO_0000667))
+                                                        Obo.SO_0000667))
 
               is_expected.to include(RDF::Statement.new(refsnp_uri,
-                                                        Vocabularies::SNPO.taxonomy,
+                                                        SNPO.taxonomy,
                                                         RDF::URI.new(PREFIXES[:tax] + '9606')))
 
               is_expected.to include(RDF::Statement.new(refsnp_uri,
-                                                        Vocabularies::M2r::gene,
+                                                        M2r::gene,
                                                         RDF::URI.new(PREFIXES[:ncbi_gene] + '102466751')))
 
               is_expected.to include(RDF::Statement.new(refsnp_uri,
-                                                        Vocabularies::M2r.reference_allele,
+                                                        M2r.reference_allele,
                                                         'C'))
 
               is_expected.to include(RDF::Statement.new(refsnp_uri,
-                                                        Vocabularies::M2r.alternative_allele,
+                                                        M2r.alternative_allele,
                                                         'CCA'))
 
               is_expected.to include(RDF::Statement.new(refsnp_uri,
-                                                        Vocabularies::SNPO.hgvs,
+                                                        SNPO.hgvs,
                                                         'NC_000001.11:g.17492_17493insCA'))
 
               faldo_nodes = subject.select do |statement|
-                statement.subject == refsnp_uri && statement.predicate == Vocabularies::Faldo.location
+                statement.subject == refsnp_uri && statement.predicate == Faldo.location
               end.map(&:object)
 
               expect(faldo_nodes.count).to eq(1)
 
               expect(faldo_nodes.any? do |faldo_node|
-                subject.include?(RDF::Statement.new(faldo_node, Vocabularies::Faldo.position, 17492)) &&
-                    subject.include?(RDF::Statement.new(faldo_node, RDF::type, Vocabularies::Faldo.ExactPosition)) &&
-                    subject.include?(RDF::Statement.new(faldo_node, Vocabularies::Faldo.reference, RDF::URI.new(PREFIXES[:refseq] + 'NC_000001.11')))
+                subject.include?(RDF::Statement.new(faldo_node, Faldo.position, 17492)) &&
+                    subject.include?(RDF::Statement.new(faldo_node, RDF::type, Faldo.ExactPosition)) &&
+                    subject.include?(RDF::Statement.new(faldo_node, Faldo.reference, RDF::URI.new(PREFIXES[:refseq] + 'NC_000001.11')))
               end
               ).to eq(true)
             end
@@ -316,46 +316,46 @@ module DbSNP::RDF
 
               is_expected.to include(RDF::Statement.new(refsnp_uri,
                                                         RDF::type,
-                                                        Vocabularies::M2r.Variation))
+                                                        M2r.Variation))
 
               is_expected.to include(RDF::Statement.new(refsnp_uri,
                                                         RDF::type,
-                                                        Vocabularies::Obo.SO_1000032))
+                                                        Obo.SO_1000032))
 
               is_expected.to include(RDF::Statement.new(refsnp_uri,
-                                                        Vocabularies::SNPO.taxonomy,
+                                                        SNPO.taxonomy,
                                                         RDF::URI.new(PREFIXES[:tax] + '9606')))
 
               is_expected.to include(RDF::Statement.new(refsnp_uri,
-                                                        Vocabularies::M2r::gene,
+                                                        M2r::gene,
                                                         RDF::URI.new(PREFIXES[:ncbi_gene] + '9636')))
 
               is_expected.to include(RDF::Statement.new(refsnp_uri,
-                                                        Vocabularies::M2r.reference_allele,
+                                                        M2r.reference_allele,
                                                         'C'))
 
               is_expected.to include(RDF::Statement.new(refsnp_uri,
-                                                        Vocabularies::M2r.alternative_allele,
+                                                        M2r.alternative_allele,
                                                         'CG'))
 
               is_expected.to include(RDF::Statement.new(refsnp_uri,
-                                                        Vocabularies::SNPO.clinical_significance,
+                                                        SNPO.clinical_significance,
                                                         'Pathogenic'))
 
               is_expected.to include(RDF::Statement.new(refsnp_uri,
-                                                        Vocabularies::SNPO.hgvs,
+                                                        SNPO.hgvs,
                                                         'NC_000001.10:g.949699dup'))
 
               faldo_nodes = subject.select do |statement|
-                statement.subject == refsnp_uri && statement.predicate == Vocabularies::Faldo.location
+                statement.subject == refsnp_uri && statement.predicate == Faldo.location
               end.map(&:object)
 
               expect(faldo_nodes.count).to eq(1)
 
               expect(faldo_nodes.any? do |faldo_node|
-                subject.include?(RDF::Statement.new(faldo_node, Vocabularies::Faldo.position, 949696)) &&
-                    subject.include?(RDF::Statement.new(faldo_node, RDF::type, Vocabularies::Faldo.ExactPosition)) &&
-                    subject.include?(RDF::Statement.new(faldo_node, Vocabularies::Faldo.reference, RDF::URI.new(PREFIXES[:refseq] + 'NC_000001.10')))
+                subject.include?(RDF::Statement.new(faldo_node, Faldo.position, 949696)) &&
+                    subject.include?(RDF::Statement.new(faldo_node, RDF::type, Faldo.ExactPosition)) &&
+                    subject.include?(RDF::Statement.new(faldo_node, Faldo.reference, RDF::URI.new(PREFIXES[:refseq] + 'NC_000001.10')))
               end
               ).to eq(true)
             end
@@ -375,60 +375,60 @@ module DbSNP::RDF
 
                 is_expected.to include(RDF::Statement.new(refsnp_uri,
                                                           RDF::type,
-                                                          Vocabularies::M2r.Variation))
+                                                          M2r.Variation))
 
                 is_expected.to include(RDF::Statement.new(refsnp_uri,
                                                           RDF::type,
-                                                          Vocabularies::Obo.SO_1000032))
+                                                          Obo.SO_1000032))
 
                 is_expected.to include(RDF::Statement.new(refsnp_uri,
-                                                          Vocabularies::SNPO.taxonomy,
+                                                          SNPO.taxonomy,
                                                           RDF::URI.new(PREFIXES[:tax] + '9606')))
 
                 is_expected.to include(RDF::Statement.new(refsnp_uri,
-                                                          Vocabularies::M2r::gene,
+                                                          M2r::gene,
                                                           RDF::URI.new(PREFIXES[:ncbi_gene] + '1855')))
 
                 is_expected.to include(RDF::Statement.new(refsnp_uri,
-                                                          Vocabularies::M2r.reference_allele,
+                                                          M2r.reference_allele,
                                                           'GTAGGCAGG'))
 
                 is_expected.to include(RDF::Statement.new(refsnp_uri,
-                                                          Vocabularies::M2r.alternative_allele,
+                                                          M2r.alternative_allele,
                                                           'GC'))
 
                 is_expected.to include(RDF::Statement.new(refsnp_uri,
-                                                          Vocabularies::SNPO.clinical_significance,
+                                                          SNPO.clinical_significance,
                                                           'Pathogenic'))
 
                 is_expected.to include(RDF::Statement.new(refsnp_uri,
-                                                          Vocabularies::SNPO.hgvs,
+                                                          SNPO.hgvs,
                                                           'NC_000001.10:g.1273413_1273420delTAGGCAGGinsC'))
 
                 faldo_nodes = subject.select do |statement|
-                  statement.subject == refsnp_uri && statement.predicate == Vocabularies::Faldo.location
+                  statement.subject == refsnp_uri && statement.predicate == Faldo.location
                 end.map(&:object)
 
                 expect(faldo_nodes.count).to eq(1)
 
                 expect(faldo_nodes.any? do |faldo_node|
                   begin_subject = subject.select do |statement|
-                    statement.subject == faldo_node && statement.predicate == Vocabularies::Faldo.begin
+                    statement.subject == faldo_node && statement.predicate == Faldo.begin
                   end[0].object
 
                   end_subject = subject.select do |statement|
-                    statement.subject == faldo_node && statement.predicate == Vocabularies::Faldo.end
+                    statement.subject == faldo_node && statement.predicate == Faldo.end
                   end[0].object
 
-                  subject.include?(RDF::Statement.new(faldo_node, RDF::type, Vocabularies::Faldo.Region)) &&
-                      subject.include?(RDF::Statement.new(faldo_node, Vocabularies::Faldo.begin, begin_subject)) &&
-                      subject.include?(RDF::Statement.new(begin_subject, RDF::type, Vocabularies::Faldo.ExactPosition)) &&
-                      subject.include?(RDF::Statement.new(begin_subject, Vocabularies::Faldo.position, 1273412)) &&
-                      subject.include?(RDF::Statement.new(begin_subject, Vocabularies::Faldo.reference, RDF::URI.new(PREFIXES[:refseq] + 'NC_000001.10'))) &&
-                      subject.include?(RDF::Statement.new(faldo_node, Vocabularies::Faldo.end, end_subject)) &&
-                      subject.include?(RDF::Statement.new(end_subject, RDF::type, Vocabularies::Faldo.ExactPosition)) &&
-                      subject.include?(RDF::Statement.new(end_subject, Vocabularies::Faldo.position, 1273420)) &&
-                      subject.include?(RDF::Statement.new(end_subject, Vocabularies::Faldo.reference, RDF::URI.new(PREFIXES[:refseq] + 'NC_000001.10')))
+                  subject.include?(RDF::Statement.new(faldo_node, RDF::type, Faldo.Region)) &&
+                      subject.include?(RDF::Statement.new(faldo_node, Faldo.begin, begin_subject)) &&
+                      subject.include?(RDF::Statement.new(begin_subject, RDF::type, Faldo.ExactPosition)) &&
+                      subject.include?(RDF::Statement.new(begin_subject, Faldo.position, 1273412)) &&
+                      subject.include?(RDF::Statement.new(begin_subject, Faldo.reference, RDF::URI.new(PREFIXES[:refseq] + 'NC_000001.10'))) &&
+                      subject.include?(RDF::Statement.new(faldo_node, Faldo.end, end_subject)) &&
+                      subject.include?(RDF::Statement.new(end_subject, RDF::type, Faldo.ExactPosition)) &&
+                      subject.include?(RDF::Statement.new(end_subject, Faldo.position, 1273420)) &&
+                      subject.include?(RDF::Statement.new(end_subject, Faldo.reference, RDF::URI.new(PREFIXES[:refseq] + 'NC_000001.10')))
                 end
                 ).to eq(true)
               end
@@ -448,7 +448,7 @@ module DbSNP::RDF
 
                 is_expected.to include(RDF::Statement.new(refsnp_uri,
                                                           RDF::type,
-                                                          Vocabularies::M2r.Variation))
+                                                          M2r.Variation))
               end
 
               context 'for A-C' do
@@ -461,38 +461,38 @@ module DbSNP::RDF
 
                   is_expected.to include(RDF::Statement.new(refsnp_part_uri,
                                                             RDF::type,
-                                                            Vocabularies::M2r.Variation))
+                                                            M2r.Variation))
 
                   is_expected.to include(RDF::Statement.new(refsnp_part_uri,
                                                             RDF::type,
-                                                            Vocabularies::Obo.SO_0001483))
+                                                            Obo.SO_0001483))
 
                   is_expected.to include(RDF::Statement.new(refsnp_part_uri,
-                                                            Vocabularies::SNPO.taxonomy,
+                                                            SNPO.taxonomy,
                                                             RDF::URI.new(PREFIXES[:tax] + '9606')))
 
                   is_expected.to include(RDF::Statement.new(refsnp_part_uri,
-                                                            Vocabularies::M2r.reference_allele,
+                                                            M2r.reference_allele,
                                                             'A'))
 
                   is_expected.to include(RDF::Statement.new(refsnp_part_uri,
-                                                            Vocabularies::M2r.alternative_allele,
+                                                            M2r.alternative_allele,
                                                             'C'))
 
                   is_expected.to include(RDF::Statement.new(refsnp_part_uri,
-                                                            Vocabularies::SNPO.hgvs,
+                                                            SNPO.hgvs,
                                                             'NC_000001.10:g.133198A>C'))
 
                   faldo_nodes = subject.select do |statement|
-                    statement.subject == refsnp_part_uri && statement.predicate == Vocabularies::Faldo.location
+                    statement.subject == refsnp_part_uri && statement.predicate == Faldo.location
                   end.map(&:object)
 
                   expect(faldo_nodes.count).to eq(1)
 
                   expect(faldo_nodes.any? do |faldo_node|
-                    subject.include?(RDF::Statement.new(faldo_node, Vocabularies::Faldo.position, 133198)) &&
-                        subject.include?(RDF::Statement.new(faldo_node, RDF::type, Vocabularies::Faldo.ExactPosition)) &&
-                        subject.include?(RDF::Statement.new(faldo_node, Vocabularies::Faldo.reference, RDF::URI.new(PREFIXES[:refseq] + 'NC_000001.10')))
+                    subject.include?(RDF::Statement.new(faldo_node, Faldo.position, 133198)) &&
+                        subject.include?(RDF::Statement.new(faldo_node, RDF::type, Faldo.ExactPosition)) &&
+                        subject.include?(RDF::Statement.new(faldo_node, Faldo.reference, RDF::URI.new(PREFIXES[:refseq] + 'NC_000001.10')))
                   end
                   ).to eq(true)
                 end
@@ -509,52 +509,52 @@ module DbSNP::RDF
 
                   is_expected.to include(RDF::Statement.new(refsnp_part_uri,
                                                             RDF::type,
-                                                            Vocabularies::M2r.Variation))
+                                                            M2r.Variation))
 
                   is_expected.to include(RDF::Statement.new(refsnp_part_uri,
                                                             RDF::type,
-                                                            Vocabularies::Obo.SO_0001483))
+                                                            Obo.SO_0001483))
 
                   is_expected.to include(RDF::Statement.new(refsnp_part_uri,
-                                                            Vocabularies::SNPO.taxonomy,
+                                                            SNPO.taxonomy,
                                                             RDF::URI.new(PREFIXES[:tax] + '9606')))
 
                   is_expected.to include(RDF::Statement.new(refsnp_part_uri,
-                                                            Vocabularies::M2r.reference_allele,
+                                                            M2r.reference_allele,
                                                             'A'))
 
                   is_expected.to include(RDF::Statement.new(refsnp_part_uri,
-                                                            Vocabularies::M2r.alternative_allele,
+                                                            M2r.alternative_allele,
                                                             'G'))
 
                   frequency_nodes = subject.select do |statement|
-                    statement.subject == refsnp_part_uri && statement.predicate == Vocabularies::SNPO.frequency
+                    statement.subject == refsnp_part_uri && statement.predicate == SNPO.frequency
                   end.map(&:object)
 
                   expect(frequency_nodes.count).to eq(1)
 
                   frequency_node = frequency_nodes[0]
 
-                  is_expected.to include(RDF::Statement.new(frequency_node, RDF::type, Vocabularies::SNPO.Frequency))
+                  is_expected.to include(RDF::Statement.new(frequency_node, RDF::type, SNPO.Frequency))
 
-                  is_expected.to include(RDF::Statement.new(frequency_node, RDF::type, Vocabularies::SNPO.send('1000GenomesFrequency')))
+                  is_expected.to include(RDF::Statement.new(frequency_node, RDF::type, SNPO.send('1000GenomesFrequency')))
 
                   is_expected.to include(RDF::Statement.new(frequency_node, RDF::value, 0.0003994))
 
                   is_expected.to include(RDF::Statement.new(refsnp_part_uri,
-                                                            Vocabularies::SNPO.hgvs,
+                                                            SNPO.hgvs,
                                                             'NC_000001.10:g.133198A>G'))
 
                   faldo_nodes = subject.select do |statement|
-                    statement.subject == refsnp_part_uri && statement.predicate == Vocabularies::Faldo.location
+                    statement.subject == refsnp_part_uri && statement.predicate == Faldo.location
                   end.map(&:object)
 
                   expect(faldo_nodes.count).to eq(1)
 
                   expect(faldo_nodes.any? do |faldo_node|
-                    subject.include?(RDF::Statement.new(faldo_node, Vocabularies::Faldo.position, 133198)) &&
-                        subject.include?(RDF::Statement.new(faldo_node, RDF::type, Vocabularies::Faldo.ExactPosition)) &&
-                        subject.include?(RDF::Statement.new(faldo_node, Vocabularies::Faldo.reference, RDF::URI.new(PREFIXES[:refseq] + 'NC_000001.10')))
+                    subject.include?(RDF::Statement.new(faldo_node, Faldo.position, 133198)) &&
+                        subject.include?(RDF::Statement.new(faldo_node, RDF::type, Faldo.ExactPosition)) &&
+                        subject.include?(RDF::Statement.new(faldo_node, Faldo.reference, RDF::URI.new(PREFIXES[:refseq] + 'NC_000001.10')))
                   end
                   ).to eq(true)
                 end
@@ -585,80 +585,80 @@ module DbSNP::RDF
 
               is_expected.to include(RDF::Statement.new(refsnp_uri,
                                                         RDF::type,
-                                                        Vocabularies::M2r.Variation))
+                                                        M2r.Variation))
 
               is_expected.to include(RDF::Statement.new(refsnp_uri,
                                                         RDF::type,
-                                                        Vocabularies::Obo.SO_0001483))
+                                                        Obo.SO_0001483))
 
               is_expected.to include(RDF::Statement.new(refsnp_uri,
-                                                        Vocabularies::SNPO.taxonomy,
+                                                        SNPO.taxonomy,
                                                         RDF::URI.new(PREFIXES[:tax] + '9606')))
 
               is_expected.to include(RDF::Statement.new(refsnp_uri,
-                                                        Vocabularies::M2r::gene,
+                                                        M2r::gene,
                                                         RDF::URI.new(PREFIXES[:ncbi_gene] + '375790')))
 
               frequency_nodes = subject.select do |statement|
-                statement.subject == refsnp_uri && statement.predicate == Vocabularies::SNPO.frequency
+                statement.subject == refsnp_uri && statement.predicate == SNPO.frequency
               end.map(&:object)
 
               expect(frequency_nodes.count).to eq(4)
 
               expect(frequency_nodes.any? do |frequency_node|
-                subject.include?(RDF::Statement.new(frequency_node, RDF::type, Vocabularies::SNPO.Frequency)) &&
-                    subject.include?(RDF::Statement.new(frequency_node, RDF::type, Vocabularies::SNPO.send('1000GenomesFrequency'))) &&
+                subject.include?(RDF::Statement.new(frequency_node, RDF::type, SNPO.Frequency)) &&
+                    subject.include?(RDF::Statement.new(frequency_node, RDF::type, SNPO.send('1000GenomesFrequency'))) &&
                     subject.include?(RDF::Statement.new(frequency_node, RDF::value, 0.009585))
               end).to eq(true)
 
               expect(frequency_nodes.any? do |frequency_node|
-                subject.include?(RDF::Statement.new(frequency_node, RDF::type, Vocabularies::SNPO.Frequency)) &&
-                    subject.include?(RDF::Statement.new(frequency_node, RDF::type, Vocabularies::SNPO.ExacFrequency)) &&
+                subject.include?(RDF::Statement.new(frequency_node, RDF::type, SNPO.Frequency)) &&
+                    subject.include?(RDF::Statement.new(frequency_node, RDF::type, SNPO.ExacFrequency)) &&
                     subject.include?(RDF::Statement.new(frequency_node, RDF::value, 0.001141))
               end).to eq(true)
 
               expect(frequency_nodes.any? do |frequency_node|
-                subject.include?(RDF::Statement.new(frequency_node, RDF::type, Vocabularies::SNPO.Frequency)) &&
-                    subject.include?(RDF::Statement.new(frequency_node, RDF::type, Vocabularies::SNPO.GnomadFrequency)) &&
+                subject.include?(RDF::Statement.new(frequency_node, RDF::type, SNPO.Frequency)) &&
+                    subject.include?(RDF::Statement.new(frequency_node, RDF::type, SNPO.GnomadFrequency)) &&
                     subject.include?(RDF::Statement.new(frequency_node, RDF::value, 0.01169))
               end).to eq(true)
 
               expect(frequency_nodes.any? do |frequency_node|
-                subject.include?(RDF::Statement.new(frequency_node, RDF::type, Vocabularies::SNPO.Frequency)) &&
-                    subject.include?(RDF::Statement.new(frequency_node, RDF::type, Vocabularies::SNPO.TopmedFrequency)) &&
+                subject.include?(RDF::Statement.new(frequency_node, RDF::type, SNPO.Frequency)) &&
+                    subject.include?(RDF::Statement.new(frequency_node, RDF::type, SNPO.TopmedFrequency)) &&
                     subject.include?(RDF::Statement.new(frequency_node, RDF::value, 0.01892))
               end).to eq(true)
 
               is_expected.to include(RDF::Statement.new(refsnp_uri,
-                                                        Vocabularies::M2r.reference_allele,
+                                                        M2r.reference_allele,
                                                         'G'))
 
               is_expected.to include(RDF::Statement.new(refsnp_uri,
-                                                        Vocabularies::M2r.alternative_allele,
+                                                        M2r.alternative_allele,
                                                         'C'))
 
               is_expected.to include(RDF::Statement.new(refsnp_uri,
-                                                        Vocabularies::SNPO.clinical_significance,
+                                                        SNPO.clinical_significance,
                                                         'Benign'))
 
               is_expected.to include(RDF::Statement.new(refsnp_uri,
-                                                        Vocabularies::SNPO.clinical_significance,
+                                                        SNPO.clinical_significance,
                                                         'Likely benign'))
 
               is_expected.to include(RDF::Statement.new(refsnp_uri,
-                                                        Vocabularies::SNPO.hgvs,
+                                                        SNPO.hgvs,
                                                         'NC_000001.10:g.955563G>C'))
 
               faldo_nodes = subject.select do |statement|
-                statement.subject == refsnp_uri && statement.predicate == Vocabularies::Faldo.location
+                statement.subject == refsnp_uri && statement.predicate == Faldo.location
               end.map(&:object)
 
               expect(faldo_nodes.count).to eq(1)
 
               expect(faldo_nodes.any? do |faldo_node|
-                subject.include?(RDF::Statement.new(faldo_node, Vocabularies::Faldo.position, 955563)) &&
-                    subject.include?(RDF::Statement.new(faldo_node, RDF::type, Vocabularies::Faldo.ExactPosition)) &&
-                    subject.include?(RDF::Statement.new(faldo_node, Vocabularies::Faldo.reference, RDF::URI.new(PREFIXES[:refseq] + 'NC_000001.10')))
+                subject.include?(RDF::Statement.new(faldo_node, Faldo.position, 955563)) &&
+                    subject.include?(RDF::Statement.new(faldo_node, RDF::type, Faldo.ExactPosition)) &&
+                    subject.include?(RDF::Statement.new(faldo_node, Faldo.reference, RDF::URI.new(PREFIXES[:refseq] + 'NC_000001.10')))
               end
               ).to eq(true)
             end
