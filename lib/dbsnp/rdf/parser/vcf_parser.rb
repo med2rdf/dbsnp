@@ -62,10 +62,11 @@ module DbSNP::RDF::Parser
       end
 
       def parse_frequency(text)
-        from_1000g = text.split('|').select { |t| t.start_with?('1000Genomes') }
-        raise new InvalidFormat(text) if from_1000g.size > 1
-        return nil if from_1000g.empty?
-        from_1000g[0].split(':')[1].split(',').map { |freq| freq == MISSING_VALUE ? nil : freq }
+        text.split('|').map do |report|
+          study, values = report.split(':')
+          values = values.split(',').map { |freq| freq == MISSING_VALUE ? nil : freq }
+          [study, values]
+        end.to_h
       end
 
       def parse_additional_part(text)

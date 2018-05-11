@@ -38,7 +38,10 @@ module DbSNP::RDF::Parser
           expect(subject.gene_id_list).to eq([])
           expect(subject.reference_allele).to eq('G')
           expect(subject.alternative_alleles).to eq(%w[A C])
-          expect(subject.frequency).to eq(['0.9996', nil, '0.0003994'])
+          expect(subject.frequency).to eq({'1000Genomes' => ['0.9996', nil, '0.0003994'],
+                                           'ExAC' => ['0.9998', nil, '0.0001704'],
+                                           'GnomAD' => ['1', nil, '0'],
+                                          })
           expect(subject.reference_sequence).to eq('NC_000001.10')
           expect(subject.position).to eq('13482')
           expect(subject.clinical_significance).to eq(nil)
@@ -57,7 +60,14 @@ module DbSNP::RDF::Parser
           expect(subject.gene_id_list).to eq(['9636'])
           expect(subject.reference_allele).to eq('C')
           expect(subject.alternative_alleles).to eq(%w[G T])
-          expect(subject.frequency).to eq(['0.9966', nil, '0.003395'])
+          expect(subject.frequency).to eq({'1000Genomes' => ['0.9966', nil, '0.003395'],
+                                           'ALSPAC' => ['0.9933', nil, '0.006746'],
+                                           'ESP6500SI-V2' => ['0.005151', nil, '0.9948'],
+                                           'ExAC' => ['0.9917', nil, '0.008307'],
+                                           'GnomAD' => ['0.9887', nil, '0.01128'],
+                                           'TOPMED' => ['0.9965', nil, '0.003537'],
+                                           'TWINSUK' => ['0.993', nil, '0.007012'],
+                                          })
           expect(subject.reference_sequence).to eq('NC_000001.11')
           expect(subject.position).to eq('1014217')
           expect(subject.clinical_significance).to eq([nil, nil, ['2']])

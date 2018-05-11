@@ -19,6 +19,16 @@ module DbSNP::RDF
         'MNV'   => Vocabularies::Obo.SO_0002007,
     }.freeze
 
+    FREQUENCY_STUDY_TERM_MAP = {
+        '1000Genomes'  => Vocabularies::SNPO.send('1000GenomesFrequency'),
+        'ALSPAC'       => Vocabularies::SNPO.AlspacFrequency,
+        'ESP6500SI-V2' => Vocabularies::SNPO.EspFrequency,
+        'ExAC'         => Vocabularies::SNPO.ExacFrequency,
+        'GnomAD'       => Vocabularies::SNPO.GnomadFrequency,
+        'TOPMED'       => Vocabularies::SNPO.TopmedFrequency,
+        'TWINSUK'      => Vocabularies::SNPO.TwinsukFrequency
+    }.freeze
+
     CLINICAL_SIGNIFICANCE_MAP = {
         '0'   => 'Uncertain significance',
         '1'   => 'Not provided',
@@ -86,7 +96,7 @@ module DbSNP::RDF
           end
 
           statements << RDF::Statement.new(subject,
-                                           Vocabularies::DbSNP.taxonomy,
+                                           Vocabularies::SNPO.taxonomy,
                                            RDF::URI.new(PREFIXES[:tax] + '9606'))
 
           variation.gene_id_list.each do |gene_id|
@@ -103,17 +113,34 @@ module DbSNP::RDF
                                            Vocabularies::M2r.alternative_allele,
                                            alt)
 
-          if variation.frequency && variation.frequency[idx + 1]
-            statements << RDF::Statement.new(subject,
-                                             Vocabularies::Snpo.frequency,
-                                             variation.frequency[idx + 1].to_f)
+          if variation.frequency
+            variation.frequency.each do |study, values|
+              next if values[idx + 1].nil?
+              frequency_node = RDF::Node.new
+              statements << RDF::Statement.new(subject,
+                                               Vocabularies::SNPO.frequency,
+                                               frequency_node)
+
+              statements << RDF::Statement.new(frequency_node,
+                                               RDF::type,
+                                               Vocabularies::SNPO.Frequency)
+
+              statements << RDF::Statement.new(frequency_node,
+                                               RDF::type,
+                                               FREQUENCY_STUDY_TERM_MAP[study])
+
+              statements << RDF::Statement.new(frequency_node,
+                                               RDF::value,
+                                               values[idx + 1].to_f)
+
+            end
           end
 
 
           if variation.clinical_significance && !variation.clinical_significance[idx + 1].nil?
             variation.clinical_significance[idx + 1].each do |sig|
               statements << RDF::Statement.new(subject,
-                                               Vocabularies::Snpo.clinical_significance,
+                                               Vocabularies::SNPO.clinical_significance,
                                                CLINICAL_SIGNIFICANCE_MAP[sig])
             end
           end
@@ -122,12 +149,12 @@ module DbSNP::RDF
           if variation.hgvs && variation.hgvs[idx + 1]
             # use hgvs in VCF
             statements << RDF::Statement.new(subject,
-                                             Vocabularies::Snpo.hgvs,
+                                             Vocabularies::SNPO.hgvs,
                                              variation.hgvs[idx + 1])
           else
             # construct hgvs
             statements << RDF::Statement.new(subject,
-                                             Vocabularies::Snpo.hgvs,
+                                             Vocabularies::SNPO.hgvs,
                                              "#{variation.reference_sequence}:g.#{hgvs_change(variation, alt)}")
           end
 
@@ -255,12 +282,19 @@ module DbSNP::RDF
 
         def validate(variation)
           CLASS_OBO_MAP.key?(variation.variation_class) &&
-              (variation.clinical_significance.nil? || validate_clinsig(variation.clinical_significance))
+              (variation.clinical_significance.nil? || validate_clinsig(variation.clinical_significance)) &&
+              (variation.frequency.nil? || validate_frequency(variation.frequency))
         end
 
         def validate_clinsig(clinsig)
           clinsig.all? do |sigs|
             sigs.nil? || sigs.all? { |sig| CLINICAL_SIGNIFICANCE_MAP.key?(sig) }
+          end
+        end
+
+        def validate_frequency(frequency)
+          frequency.all? do |study, _|
+            FREQUENCY_STUDY_TERM_MAP.key?(study)
           end
         end
       end

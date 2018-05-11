@@ -40,7 +40,8 @@ module DbSNP
     module Vocabularies
       autoload :M2r, 'dbsnp/rdf/vocabularies'
       autoload :Obo, 'dbsnp/rdf/vocabularies'
-      autoload :DbSNP, 'dbsnp/rdf/vocabularies'
+      autoload :Faldo, 'dbsnp/rdf/vocabularies'
+      autoload :SNPO, 'dbsnp/rdf/vocabularies'
     end
 
     module Generator
