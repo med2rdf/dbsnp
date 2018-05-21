@@ -36,7 +36,7 @@ module DbSNP::RDF
     ontology to_uri.freeze,
              type:             ::RDF::OWL.Ontology,
              :'dc:title'       => 'dbSNP Ontology',
-             :'dc:description' => 'dbSNP Ontology describes classes and properties which is used in DGIdb RDF',
+             :'dc:description' => 'dbSNP Ontology describes classes and properties which is used in dbSNP RDF',
              :'owl:imports'    => [::RDF::Vocab::DC.to_s,
                                    Faldo.to_s,
                                    Obo.to_s,
