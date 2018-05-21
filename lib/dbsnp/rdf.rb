@@ -42,7 +42,6 @@ module DbSNP
       autoload :EntrySplitter, 'dbsnp/rdf/parser/entry_splitter'
     end
 
-
     module Generator
       autoload :TurtleGenerator, 'dbsnp/rdf/generator/turtle_generator'
     end

@@ -42,7 +42,6 @@ module DbSNP::RDF
                                    Obo.to_s,
                                    M2r.to_s].freeze
 
-    # Exac GnomAD 1000G TOPMED
     # Class definitions
     term :Frequency,
          type:        ::RDF::OWL.Class,
