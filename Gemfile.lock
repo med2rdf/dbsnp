@@ -65,17 +65,19 @@ GEM
     thread_safe (0.3.6)
     tzinfo (1.2.5)
       thread_safe (~> 0.1)
+    yard (0.9.16)
 
 PLATFORMS
   ruby
 
 DEPENDENCIES
-  awesome_print (~> 1.8)
+  awesome_print
   bundler (~> 1.16)
   dbsnp-rdf!
   pry
   rake (~> 10.0)
   rspec (~> 3.0)
+  yard
 
 BUNDLED WITH
    1.16.6

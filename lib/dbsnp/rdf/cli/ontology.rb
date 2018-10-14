@@ -2,7 +2,7 @@ require 'optparse'
 
 module DbSNP::RDF
   module CLI
-    class Convert
+    class Ontology
 
       DEFAULT_OPTIONS = {
         help: false
@@ -20,9 +20,11 @@ module DbSNP::RDF
           exit 0
         end
 
-        Writer::Turtle.new do |writer|
-          Reader::VCF.new.each { |data| writer << data }
+        ontology = ::RDF::Turtle::Writer.buffer(prefixes: PREFIXES) do |writer|
+          SNPO.each_statement { |x| writer << x }
         end
+
+        puts ontology
 
       rescue OptionParser::ParseError => e
         STDERR.puts e.message

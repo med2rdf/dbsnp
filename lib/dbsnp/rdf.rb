@@ -9,8 +9,9 @@ module DbSNP
     BASE_URI = 'http://med2rdf.org/dbsnp/variation/%s'.freeze
 
     module CLI
-      autoload :Runner, 'dbsnp/rdf/cli/runner'
       autoload :Convert, 'dbsnp/rdf/cli/convert'
+      autoload :Ontology, 'dbsnp/rdf/cli/ontology'
+      autoload :Runner, 'dbsnp/rdf/cli/runner'
     end
 
     module Helpers

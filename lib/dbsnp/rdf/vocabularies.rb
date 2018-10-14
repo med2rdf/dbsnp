@@ -3,8 +3,9 @@ require 'rdf/vocab'
 
 module DbSNP::RDF
   PREFIXES = {
-    dc:        ::RDF::Vocab::DC.to_s,
     rdf:       ::RDF::RDFV.to_s,
+    owl:       ::RDF::OWL.to_s,
+    dc:        ::RDF::Vocab::DC.to_s,
     rdfs:      ::RDF::Vocab::RDFS.to_s,
     xsd:       ::RDF::Vocab::XSD.to_s,
     dbsnp:     'http://identifiers.org/dbsnp/',
@@ -122,10 +123,5 @@ module DbSNP::RDF
              range:       ::RDF::XSD.string,
              comment:     'First dbSNP Build for RS'
     )
-
-    def self.prefixes
-      PREFIXES.merge({ owl:  ::RDF::OWL.to_s.freeze,
-                       rdfs: ::RDF::Vocab::RDFS.to_s.freeze })
-    end
   end
 end
