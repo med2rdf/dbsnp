@@ -1,57 +1,39 @@
 # DbSNP::RDF
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/dbsnp/rdf`. To experiment with that code, run `bin/console` for an interactive prompt.
-
-TODO: Delete this and the text above, and describe your gem
-
-## Installation
-
-Add this line to your application's Gemfile:
-
-```ruby
-gem 'dbsnp-rdf'
-```
-
-And then execute:
-
-    $ bundle
-
-Or install it yourself as:
-
-    $ gem install dbsnp-rdf
-
 ## Usage
 
-    $ ./bin/dbsnp-rdf convert <input>
-    
-Input: dbSNP entry (in pipe-separated values)
+- Input: dbSNP VCF (Variant Call Format)
 
-Output: RDF triples (in turtle format)
+  - GRCh37
+    ftp://ftp.ncbi.nlm.nih.gov/snp/.redesign/latest_release/VCF/GCF_000001405.25.bgz
+  - GRCh38
+    ftp://ftp.ncbi.nlm.nih.gov/snp/.redesign/latest_release/VCF/GCF_000001405.33.bgz
 
-## Installation of Raptor RDF Library (Optional)
+- Output: Turtle formatted RDF
 
-Raptor accelerates serialization of entries.
+### With docker
 
-### For macOS (Homebrew)
+```
+$ docker build --tag dbsnp-rdf .
+$ zcat GCF_000001405.33.vcf.gz | docker run --rm -i dbsnp-rdf dbsnp-rdf convert | gzip -c > dbSNP.GRCh38.ttl
+```
 
-    $ brew unlink raptor # necessary only if you have already installed Raptor
-    $ brew install ./scripts/raptor.rb
+### In your code
 
-Note: The binary package of Raptor seems not to be compatible with ruby-rdf/rdf-raptor, so `brew install raptor` will not work (2018/05/09).
+```ruby
+require 'dbsnp/rdf'
 
-### For Ubuntu
-    
-    $ sudo apt-get install libraptor2-0
+DbSNP::RDF::Writer::Turtle.new do |writer| # to standard output
+  DbSNP::RDF::Reader::VCF.new.each do |data| # from standard input
+    writer << data
+  end
+end
 
-## Development
-
-After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake spec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
-
-To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release`, which will create a git tag for the version, push git commits and tags, and push the `.gem` file to [rubygems.org](https://rubygems.org).
+```
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/[USERNAME]/dbsnp-rdf. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [Contributor Covenant](http://contributor-covenant.org) code of conduct.
+Bug reports and pull requests are welcome on GitHub at https://github.com/med2rdf/dbsnp-rdf. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [Contributor Covenant](http://contributor-covenant.org) code of conduct.
 
 ## License
 
@@ -59,4 +41,4 @@ The gem is available as open source under the terms of the [MIT License](https:/
 
 ## Code of Conduct
 
-Everyone interacting in the Dbsnp::Rdf project’s codebases, issue trackers, chat rooms and mailing lists is expected to follow the [code of conduct](https://github.com/[USERNAME]/dbsnp-rdf/blob/master/CODE_OF_CONDUCT.md).
+Everyone interacting in the Dbsnp::Rdf project’s codebases, issue trackers, chat rooms and mailing lists is expected to follow the [code of conduct](https://github.com/med2rdf/dbsnp-rdf/blob/master/CODE_OF_CONDUCT.md).
