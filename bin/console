@@ -3,9 +3,6 @@
 require 'bundler/setup'
 require 'dbsnp/rdf'
 
-require 'active_record'
-ActiveRecord::Base.logger = Logger.new(STDOUT)
-
 require 'pry'
-Pry.config.history.file = 'tmp/prb_history'
+Pry.config.history.file = 'tmp/pry_history'
 Pry.start(__FILE__)

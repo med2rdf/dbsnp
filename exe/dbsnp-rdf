@@ -2,4 +2,4 @@
 
 require 'dbsnp/rdf'
 
-Dbsnp::RDF::CLI::Runner.new.run
+DbSNP::RDF::CLI::Runner.new.run

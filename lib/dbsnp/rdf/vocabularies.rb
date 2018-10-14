@@ -2,33 +2,28 @@ require 'rdf'
 require 'rdf/vocab'
 
 module DbSNP::RDF
-  class M2r < RDF::StrictVocabulary(PREFIXES[:m2r])
-    term :Variation
+  PREFIXES = {
+    dc:        ::RDF::Vocab::DC.to_s,
+    rdf:       ::RDF::RDFV.to_s,
+    rdfs:      ::RDF::Vocab::RDFS.to_s,
+    xsd:       ::RDF::Vocab::XSD.to_s,
+    dbsnp:     'http://identifiers.org/dbsnp/',
+    faldo:     'http://biohackathon.org/resource/faldo#',
+    hco:       'http://identifiers.org/hco/',
+    m2r:       'http://med2rdf.org/ontology/med2rdf#',
+    ncbi_gene: 'http://identifiers.org/ncbigene/',
+    obo:       'http://purl.obolibrary.org/obo/',
+    refseq:    'http://identifiers.org/refseq/',
+    sio:       'http://semanticscience.org/resource/',
+    snpo:      'http://purl.jp/bio/10/dbsnp/',
+    tax:       'http://identifiers.org/taxonomy/'
+  }.freeze
 
-    property :gene
-    property :reference_allele
-    property :alternative_allele
-  end
-
-  class Obo < RDF::StrictVocabulary(PREFIXES[:obo])
-    term :SO_0001483
-    term :SO_1000032
-    term :SO_0000289
-    term :SO_0002007
-    term :SO_0000159
-    term :SO_0000667
-  end
-
-  class Faldo < RDF::StrictVocabulary(PREFIXES[:faldo])
-    term :ExactPosition
-    term :Region
-
-    property :location
-    property :position
-    property :reference
-    property :begin
-    property :end
-  end
+  FALDO = RDF::Vocabulary.new(PREFIXES[:faldo])
+  HCO   = RDF::Vocabulary.new(PREFIXES[:hco])
+  M2R   = RDF::Vocabulary.new(PREFIXES[:m2r])
+  OBO   = RDF::Vocabulary.new(PREFIXES[:obo])
+  SIO   = RDF::Vocabulary.new(PREFIXES[:sio])
 
   class SNPO < RDF::StrictVocabulary(PREFIXES[:snpo])
 
@@ -38,106 +33,99 @@ module DbSNP::RDF
              :'dc:title'       => 'dbSNP Ontology',
              :'dc:description' => 'dbSNP Ontology describes classes and properties which is used in dbSNP RDF',
              :'owl:imports'    => [::RDF::Vocab::DC.to_s,
-                                   Faldo.to_s,
-                                   Obo.to_s,
-                                   M2r.to_s].freeze
+                                   FALDO.to_s,
+                                   OBO.to_s,
+                                   M2R.to_s].freeze
 
     # Class definitions
+    term :Allele,
+         type:        ::RDF::OWL.Class,
+         subClassOf:  M2R.Variation.freeze,
+         isDefinedBy: to_s.freeze,
+         label:       'Allele'.freeze
+
     term :Frequency,
          type:        ::RDF::OWL.Class,
          isDefinedBy: to_s.freeze,
-         comment:     'Frequency of a minor allele',
          label:       'Frequency'.freeze
 
     term :'1000GenomesFrequency',
          type:        ::RDF::OWL.Class,
          subClassOf:  self.Frequency,
          isDefinedBy: to_s.freeze,
-         comment:     'Frequency of a minor allele reported by 1000Genomes ',
+         comment:     'Frequency of a minor allele reported by 1000Genomes',
          label:       '1000GenomesFrequency'.freeze
 
-    term :AlspacFrequency,
+    term :ALSPACFrequency,
          type:        ::RDF::OWL.Class,
          subClassOf:  self.Frequency,
          isDefinedBy: to_s.freeze,
-         comment:     'Frequency of a minor allele reported by ALSPAC ',
-         label:       'AlspacFrequency'.freeze
+         comment:     'Frequency of a minor allele reported by ALSPAC',
+         label:       'ALSPACFrequency'.freeze
 
-    term :EspFrequency,
+    term :GoESPFrequency,
          type:        ::RDF::OWL.Class,
          subClassOf:  self.Frequency,
          isDefinedBy: to_s.freeze,
-         comment:     'Frequency of a minor allele reported by ESP6500SI-V2 ',
-         label:       'EspFrequency'.freeze
+         comment:     'Frequency of a minor allele reported by GoESPF',
+         label:       'GoESPFrequency'.freeze
 
-    term :ExacFrequency,
+    term :ExACFrequency,
          type:        ::RDF::OWL.Class,
          subClassOf:  self.Frequency,
          isDefinedBy: to_s.freeze,
-         comment:     'Frequency of a minor allele reported by ExAC ',
-         label:       'ExacFrequency'.freeze
+         comment:     'Frequency of a minor allele reported by ExAC',
+         label:       'ExACFrequency'.freeze
 
-    term :GnomadFrequency,
+    term :GnomADFrequency,
          type:        ::RDF::OWL.Class,
          subClassOf:  self.Frequency,
          isDefinedBy: to_s.freeze,
-         comment:     'Frequency of a minor allele reported by GnomAD ',
-         label:       'GnomadFrequency'.freeze
+         comment:     'Frequency of a minor allele reported by GnomAD',
+         label:       'GnomADFrequency'.freeze
 
-    term :TopmedFrequency,
+    term :GnomAD_exomesFrequency,
          type:        ::RDF::OWL.Class,
          subClassOf:  self.Frequency,
          isDefinedBy: to_s.freeze,
-         comment:     'Frequency of a minor allele reported by TOPMED ',
-         label:       'TopmedFrequency'.freeze
+         comment:     'Frequency of a minor allele reported by GnomAD_exomes',
+         label:       'GnomAD_exomesFrequency'.freeze
 
-    term :TwinsukFrequency,
+    term :TOPMEDFrequency,
          type:        ::RDF::OWL.Class,
          subClassOf:  self.Frequency,
          isDefinedBy: to_s.freeze,
-         comment:     'Frequency of a minor allele reported by TWINSUK ',
-         label:       'TwinsukFrequency'.freeze
+         comment:     'Frequency of a minor allele reported by TOPMED',
+         label:       'TOPMEDFrequency'.freeze
+
+    term :TWINSUKFrequency,
+         type:        ::RDF::OWL.Class,
+         subClassOf:  self.Frequency,
+         isDefinedBy: to_s.freeze,
+         comment:     'Frequency of a minor allele reported by TWINSUK',
+         label:       'TWINSUKFrequency'.freeze
 
     # Property definitions
     property(:clinical_significance,
              type:        ::RDF::OWL.DatatypeProperty,
              label:       'clinical_significance'.freeze,
-             domain:      M2r.Variation,
+             domain:      SNPO.Allele,
              isDefinedBy: to_s.freeze,
              range:       ::RDF::XSD.string
     )
 
-    property(:frequency,
-             type:        ::RDF::OWL.ObjectProperty,
-             label:       'hgvs'.freeze,
-             comment:     'frequency of a minor allele'.freeze,
-             domain:      M2r.Variation,
-             isDefinedBy: to_s.freeze,
-             range:       self.Frequency
-    )
-
-    property(:hgvs,
+    property(:build,
              type:        ::RDF::OWL.DatatypeProperty,
-             label:       'hgvs'.freeze,
-             comment:     'representation in HGVS format'.freeze,
-             domain:      M2r.Variation,
+             label:       'build'.freeze,
              isDefinedBy: to_s.freeze,
-             range:       ::RDF::XSD.string
-    )
-
-    property(:taxonomy,
-             type:        ::RDF::OWL.ObjectProperty,
-             label:       'taxonomy'.freeze,
-             domain:      M2r.Variation,
-             isDefinedBy: to_s.freeze,
-             range:       ::RDF::Vocab::RDFS.Resource
+             domain:      M2R.Variation,
+             range:       ::RDF::XSD.string,
+             comment:     'First dbSNP Build for RS'
     )
 
     def self.prefixes
-      PREFIXES.merge({
-                         owl:  ::RDF::OWL.to_s.freeze,
-                         rdfs: ::RDF::Vocab::RDFS.to_s.freeze
-                     })
+      PREFIXES.merge({ owl:  ::RDF::OWL.to_s.freeze,
+                       rdfs: ::RDF::Vocab::RDFS.to_s.freeze })
     end
   end
 end

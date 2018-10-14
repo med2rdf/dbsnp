@@ -13,6 +13,8 @@ Gem::Specification.new do |spec|
   spec.homepage    = 'http://med2rdf.org'
   spec.license     = 'MIT'
 
+  spec.required_ruby_version = '>= 2.5.0'
+
   spec.files = Dir['exe/*'] + Dir['lib/**/*.rb'] + Dir['[A-Z]*']
   spec.files.reject! { |fn| fn.include? 'CVS' }
   spec.bindir        = 'exe'
@@ -26,9 +28,8 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'rspec', '~> 3.0'
 
   spec.add_dependency 'activesupport', '~> 5.2', '>= 5.2.1'
-  spec.add_dependency 'parallel', '~> 1.12', '>= 1.12.1'
+  spec.add_dependency 'activemodel', '~> 5.2', '>= 5.2.1'
   spec.add_dependency 'rdf', '~> 3.0', '>= 3.0.4'
-  spec.add_dependency 'rdf-raptor', '~> 2.2'
   spec.add_dependency 'rdf-turtle', '~> 3.0', '>= 3.0.3'
   spec.add_dependency 'rdf-vocab', '~> 3.0', '>= 3.0.3'
   spec.add_dependency 'rdf-xsd', '~> 3.0', '>= 3.0.1'

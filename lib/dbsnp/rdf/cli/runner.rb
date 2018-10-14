@@ -3,60 +3,58 @@ require 'active_support/core_ext/object/inclusion'
 require 'active_support/core_ext/string/strip'
 require 'active_support/inflector'
 
-module DbSNP
-  module RDF
-    module CLI
+module DbSNP::RDF
+  module CLI
 
-      PROG_NAME = 'dbsnp-rdf'.freeze
+    PROG_NAME = 'dbsnp-rdf'.freeze
 
-      class Runner
-        def run
-          command = ARGV.shift || '--help'
+    class Runner
+      def run
+        command = ARGV.shift || '--help'
 
-          case command
-          when '-v', '--version'
-            STDERR.puts DbSNP::RDF::VERSION
-          when '-h', '--help'
-            STDERR.puts help
-          when *commands
-            target = DbSNP::RDF::CLI.const_get(command.capitalize).new
-            target.run if target.respond_to?(:run)
-          else
-            STDERR.puts "Unknown command: '#{command}'"
-            STDERR.puts
-            STDERR.puts help
-            exit 1
-          end
-
-          exit 0
+        case command
+        when '-v', '--version'
+          STDERR.puts DbSNP::RDF::VERSION
+        when '-h', '--help'
+          STDERR.puts help
+        when *commands
+          target = DbSNP::RDF::CLI.const_get(command.capitalize).new
+          target.run if target.respond_to?(:run)
+        else
+          STDERR.puts "Unknown command: '#{command}'"
+          STDERR.puts
+          STDERR.puts help
+          exit 1
         end
 
-        private
+        exit 0
+      end
 
-        def commands
-          klasses = DbSNP::RDF::CLI.constants.reject do |c|
-            c.in? %i[Runner PROG_NAME]
-          end
-          klasses.map { |k| k.to_s.underscore }
+      private
+
+      def commands
+        klasses = DbSNP::RDF::CLI.constants.reject do |c|
+          c.in? %i[Runner PROG_NAME]
         end
+        klasses.map { |k| k.to_s.underscore }
+      end
 
-        def help
-          <<-USAGE.strip_heredoc % commands.map { |c| "    #{c}" }.join("\n")
-            Usage: #{PROG_NAME} [command] [options] [arguments]
+      def help
+        <<-USAGE.strip_heredoc % commands.map { |c| "    #{c}" }.join("\n")
+          Usage: #{PROG_NAME} [command] [options] [arguments]
+  
+          RDF Converter for dbSNP
+  
+          Commands:
+          %s
+  
+          Options:
+              -h, --help                       show help
+              -v, --version                    print version
+  
+          Run '#{PROG_NAME} COMMAND --help' for more information on a command
 
-            RDF Converter for dbSNP
-
-            Commands:
-            %s
-
-            Options:
-                -h, --help                       show help
-                -v, --version                    print version
-
-            Run '#{PROG_NAME} COMMAND --help' for more information on a command
-
-          USAGE
-        end
+        USAGE
       end
     end
   end
