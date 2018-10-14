@@ -4,9 +4,7 @@ module DbSNP::RDF
   module CLI
     class Ontology
 
-      DEFAULT_OPTIONS = {
-        help: false
-      }.freeze
+      DEFAULT_OPTIONS = { help: false }.freeze
 
       def initialize
         @options = Hash[DEFAULT_OPTIONS]
