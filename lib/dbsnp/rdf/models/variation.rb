@@ -29,7 +29,7 @@ module DbSNP::RDF
       # @return [Array<Integer>] an array of NCBI gene ID (e.g. `["9636"]`)
       attr_accessor :gene_id_list # array
 
-      # @return [Integer] a number of dbSNP build
+      # @return [Integer, nil] a number of the first dbSNP Build
       attr_accessor :build
 
       # List of items
@@ -93,7 +93,7 @@ module DbSNP::RDF
           g << [subject, ::RDF::Vocab::DC.identifier, rs]
           g << [subject, ::RDF::Vocab::RDFS.seeAlso, DBSNP_BASE / rs]
           g << [subject, OBO['RO_0002162'], TAXONOMY_BASE / 9606] # TODO
-          g << [subject, SNPO.build, build]
+          g << [subject, SNPO.build, build] if build
           gene_id_list&.each do |id|
             g << [subject, M2R.gene, GENE_BASE / id] # TODO m2r:Gene
           end
