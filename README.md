@@ -15,7 +15,7 @@
 
 ```
 $ docker build --tag dbsnp-rdf .
-$ zcat GCF_000001405.33.vcf.bgz | docker run --rm -i dbsnp-rdf dbsnp-rdf convert | gzip -c > dbSNP.GRCh38.ttl.gz
+$ zcat GCF_000001405.33.vcf.bgz | docker run --rm -i dbsnp-rdf dbsnp-rdf convert 2> dbSNP.GRCh38.ttl.log | gzip -c > dbSNP.GRCh38.ttl.gz
 ```
 
 ### In your code
