@@ -185,3 +185,14 @@ module DbSNP::RDF
     end
   end
 end
+
+module ActiveModel
+  class ValidationError
+    def initialize(model)
+      @model = model
+      errors = @model.errors.full_messages.join(", ")
+      errors << ": #{@model.inspect}"
+      super(errors)
+    end
+  end
+end

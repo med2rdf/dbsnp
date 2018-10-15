@@ -1,3 +1,4 @@
+require 'active_model'
 require 'active_support'
 require 'active_support/core_ext/hash'
 
@@ -78,8 +79,10 @@ module DbSNP::RDF
       end
 
       def each
+        line_no = 0
         if block_given?
           while (line = @io.gets&.chomp)
+            line_no += 1
             unless line.start_with?('#')
               yield self.class.parse(line)
               break
@@ -87,7 +90,13 @@ module DbSNP::RDF
             process_header(line)
           end
           while (line = @io.gets&.chomp)
-            yield self.class.parse(line)
+            line_no += 1
+            begin
+              yield self.class.parse(line)
+            rescue ActiveModel::ValidationError => e
+              @logger ||= Logger.new(STDERR)
+              @logger.warn("Failed to convert data due to validation error at line #{line_no}: #{line}")
+            end
           end
         else
           to_enum
