@@ -59,7 +59,7 @@ module DbSNP::RDF
       # - 12: conflict
       # - 13: affects
       # - 255: other
-      # @return [Array<Integer>] an array (for each alternative allele) of clinical significance
+      # @return [Array<Array<Integer>>] an array (for each alternative allele) of an array of clinical significance(s)
       attr_accessor :clinical_significance
 
       # @return [Hash] an array (for each alternative allele) of alternate allele frequency
@@ -118,7 +118,9 @@ module DbSNP::RDF
           end
 
           if (x = clinical_significance&.at(i))
-            @graph << [allele, SNPO.clinical_significance, num2significance(x)]
+            x.each do |i|
+              @graph << [allele, SNPO.clinical_significance, num2significance(i)]
+            end
           end
 
           frequency&.each do |k, v|

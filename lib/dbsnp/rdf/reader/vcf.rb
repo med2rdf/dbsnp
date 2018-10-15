@@ -55,7 +55,8 @@ module DbSNP::RDF
               end
 
               if (x = info[:CLNSIG])
-                v.clinical_significance = x.split(',').drop(1).map { |y| y == MISSING_VALUE ? nil : Integer(y) }
+                v.clinical_significance = x.split(',').drop(1)
+                                            .map { |y| y.split('|').map { |z| z == MISSING_VALUE ? nil : Integer(z) } }
               end
 
               if (x = info[:FREQ])
