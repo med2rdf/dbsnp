@@ -118,8 +118,8 @@ module DbSNP::RDF
           end
 
           if (x = clinical_significance&.at(i))
-            x.each do |i|
-              @graph << [allele, SNPO.clinical_significance, num2significance(i)]
+            x.each do |j|
+              @graph << [allele, SNPO.clinical_significance, num2significance(j)]
             end
           end
 
