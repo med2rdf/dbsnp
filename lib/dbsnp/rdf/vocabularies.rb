@@ -3,7 +3,6 @@ require 'rdf/vocab'
 
 module DbSNP::RDF
   PREFIXES = {
-    rdf:       ::RDF::RDFV.to_s,
     owl:       ::RDF::OWL.to_s,
     dc:        ::RDF::Vocab::DC.to_s,
     rdfs:      ::RDF::Vocab::RDFS.to_s,
