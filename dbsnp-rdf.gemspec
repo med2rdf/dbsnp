@@ -31,6 +31,7 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'activesupport', '~> 5.2', '>= 5.2.1'
   spec.add_dependency 'activemodel', '~> 5.2', '>= 5.2.1'
   spec.add_dependency 'rdf', '~> 3.0', '>= 3.0.4'
+  spec.add_dependency 'rdf-raptor', '~> 2.2.0'
   spec.add_dependency 'rdf-turtle', '~> 3.0', '>= 3.0.3'
   spec.add_dependency 'rdf-vocab', '~> 3.0', '>= 3.0.3'
   spec.add_dependency 'rdf-xsd', '~> 3.0', '>= 3.0.1'

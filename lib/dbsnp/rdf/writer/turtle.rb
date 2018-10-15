@@ -1,4 +1,5 @@
 require 'rdf'
+require 'rdf/raptor'
 require 'rdf/turtle'
 require 'zlib'
 
@@ -39,7 +40,7 @@ module DbSNP::RDF
       # @param  [RDF::Enumerable, RDF::Statement, #to_rdf] data
       # @return [Integer] the number of bytes written
       def <<(data)
-        buffer = ::RDF::Turtle::Writer.buffer(OPTIONS) do |writer|
+        buffer = ::RDF::Writer.for(:turtle).buffer(OPTIONS) do |writer|
           writer << data
         end
 
