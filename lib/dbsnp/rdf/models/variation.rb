@@ -143,7 +143,7 @@ module DbSNP::RDF
           @graph << [loc, ::RDF.type, FALDO.Position]
           @graph << [loc, ::RDF.type, FALDO.ExactPosition]
           @graph << [loc, FALDO.position, position]
-          if (hco = refseq2hco(chromosome))
+          if (hco = refseq2hco(chromosome, assembly))
             @graph << [loc, FALDO.reference, hco]
           end
           @graph << [loc, FALDO.reference, REFSEQ_BASE / chromosome]
@@ -155,7 +155,7 @@ module DbSNP::RDF
             @graph << [node, ::RDF.type, FALDO.Position]
             @graph << [node, ::RDF.type, FALDO.ExactPosition]
             @graph << [node, FALDO.position, pos]
-            if (hco = refseq2hco(chromosome))
+            if (hco = refseq2hco(chromosome, assembly))
               @graph << [node, FALDO.reference, hco]
             end
             @graph << [node, FALDO.reference, REFSEQ_BASE / chromosome]
