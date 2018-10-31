@@ -1,4 +1,4 @@
-# DbSNP::RDF
+# dbSNP::RDF
 
 ## Usage
 
@@ -18,7 +18,18 @@ $ docker build --tag dbsnp-rdf .
 $ zcat GCF_000001405.33.vcf.bgz | docker run --rm -i dbsnp-rdf dbsnp-rdf convert 2> dbSNP.GRCh38.ttl.log | gzip -c > dbSNP.GRCh38.ttl.gz
 ```
 
-### In your code
+### On your system
+
+See [Prerequisites](#prerequisites) before running the code. 
+
+```
+$ git clone https://github.com/med2rdf/dbsnp.git
+$ cd dbsnp
+$ bundle install
+$ zcat GCF_000001405.33.vcf.bgz | bundle exec dbsnp-rdf convert 2> dbSNP.GRCh38.ttl.log | gzip -c > dbSNP.GRCh38.ttl.gz 
+```
+
+or in your ruby code
 
 ```ruby
 require 'dbsnp/rdf'
@@ -29,6 +40,40 @@ DbSNP::RDF::Writer::Turtle.new do |writer| # to standard output
   end
 end
 
+```
+
+#### Prerequisites 
+
+- ruby 2.5.0+
+- (Optional) [raptor 2.0+](http://librdf.org/raptor/)
+
+Note: In macOS, the raptor library installed with Homebrew is NOT applicable for now.
+Please build the library from source following the below instruction.
+
+##### Install raptor (Optional)
+
+apt
+
+```
+# apt-get update && apt-get install libraptor2
+```
+
+yum
+
+```
+# yum install raptor2
+```
+
+from source
+
+```
+$ wget http://download.librdf.org/source/raptor2-2.0.15.tar.gz
+$ tar xvf raptor2-2.0.15.tar.gz
+$ cd raptor2-2.0.15
+$ ./configure --disable-debug --disable-dependency-tracking
+$ make
+(switch to super user if needed)
+# make install
 ```
 
 ## Contributing
