@@ -24,6 +24,7 @@ module DbSNP::RDF
 
       class << self
         attr_accessor :assembly
+        attr_accessor :latest_build
 
         def parse(line)
           tokens = line.split(COLUMN_DELIMITER).map(&:strip)
@@ -34,6 +35,7 @@ module DbSNP::RDF
             DbSNP::RDF::Models::Variation.new do |v|
               v.chromosome          = tokens[0]
               v.assembly            = assembly
+              v.latest_build        = Integer(latest_build)
               v.position            = Integer(tokens[1])
               v.rs                  = tokens[2]
               v.reference_allele    = tokens[3]
@@ -45,19 +47,12 @@ module DbSNP::RDF
                 v.gene_id_list = x.split('|').map { |y| Integer(y.split(':')[1]) }
               end
 
-              if (x = info[:dbSNPBuildID])
-                v.build = Integer(x)
-              end
+              v.first_build = Integer(info[:dbSNPBuildID])
 
               v.variation_class = info[:VC].presence
 
-              if (x = info[:CLNHGVS])
-                v.hgvs = x.split(',').drop(1).map { |y| y == MISSING_VALUE ? nil : y }
-              end
-
-              if (x = info[:CLNSIG])
-                v.clinical_significance = x.split(',').drop(1)
-                                            .map { |y| y == MISSING_VALUE ? nil : y.split('|').map { |z| Integer(z) } }
+              if (x = info[:CLNACC])
+                v.clinvar_accession = x.split(',').drop(1).map { |y| y == MISSING_VALUE ? nil : y }.map { |y| y.split('|') }
               end
 
               if (x = info[:FREQ])
@@ -106,8 +101,11 @@ module DbSNP::RDF
       private
 
       def process_header(line)
-        if (match = line.match('##reference=([^\.]+)'))
+        if (match = line.match(/##reference=([^.]+)/))
           self.class.assembly = match[1]
+        end
+        if (match = line.match(/##dbSNP_BUILD_ID=(\d+)/))
+          self.class.latest_build = match[1]
         end
       end
     end
