@@ -34,20 +34,18 @@ module DbSNP::RDF
         yield self if block_given?
       end
 
-      OPTIONS = { base_uri: BASE_URI % '',
-                  prefixes: PREFIXES }
-
       # @param  [RDF::Enumerable, RDF::Statement, #to_rdf] data
       # @return [Integer] the number of bytes written
       def <<(data)
-        buffer = ::RDF::Writer.for(:turtle).buffer(OPTIONS) do |writer|
+        buffer = ::RDF::Writer.for(:turtle).buffer({ prefixes: PREFIXES }) do |writer|
           writer << data
         end
 
         buffer.gsub!(/^@.*\n/, '')
 
         unless @header_written
-          ::RDF::Turtle::Writer.new(@io, OPTIONS.merge(stream: true)).write_epilogue
+          header_options = { prefixes: PREFIXES.merge(rdf: ::RDF::RDFV.to_s), stream: true }
+          ::RDF::Turtle::Writer.new(@io, header_options).write_epilogue
           @header_written = true
         end
 

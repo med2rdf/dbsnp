@@ -6,8 +6,6 @@ module DbSNP
 
     ROOT_DIR = File.expand_path('../../', File.dirname(__FILE__)).freeze
 
-    BASE_URI = 'http://med2rdf.org/dbsnp/variation/%s'.freeze
-
     module CLI
       autoload :Convert, 'dbsnp/rdf/cli/convert'
       autoload :Ontology, 'dbsnp/rdf/cli/ontology'
