@@ -57,19 +57,3 @@ variant_class:
   INS: SO_0000667
   DEL: SO_0000159
   MNV: SO_0002007
-
-clinical_significance:
-  0: Uncertain significance
-  1: not provided
-  2: Benign
-  3: Likely benign
-  4: Likely pathogenic
-  5: Pathogenic
-  6: drug response
-  8: confers sensitivity
-  9: risk-factor
-  10: association
-  11: protective
-  12: conflict
-  13: affects
-  255: other

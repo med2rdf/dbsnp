@@ -36,12 +36,6 @@ module DbSNP::RDF
         OBO[so] if so
       end
 
-      # @param [Integer] index
-      # @return [String]
-      def num2significance(index)
-        mappings[:clinical_significance][index]
-      end
-
       private
 
       def mappings
