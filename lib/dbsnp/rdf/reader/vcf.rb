@@ -32,35 +32,31 @@ module DbSNP::RDF
           raise FormatError, line unless tokens.length == 8
 
           begin
-            DbSNP::RDF::Models::Variation.new do |v|
-              v.chromosome          = tokens[0]
-              v.assembly            = assembly
-              v.latest_build        = Integer(latest_build)
-              v.position            = Integer(tokens[1])
-              v.rs                  = tokens[2]
-              v.reference_allele    = tokens[3]
-              v.alternative_alleles = tokens[4].split(',')
+            DbSNP::RDF::Models::Variation.new do |var|
+              var.chromosome          = tokens[0]
+              var.assembly            = assembly
+              var.latest_build        = Integer(latest_build)
+              var.position            = Integer(tokens[1])
+              var.rs                  = tokens[2]
+              var.reference_allele    = tokens[3]
+              var.alternative_alleles = tokens[4].split(',')
 
               info = Info.parse(tokens[7])
 
-              if (x = info[:GENEINFO])
-                v.gene_id_list = x.split('|').map { |y| Integer(y.split(':')[1]) }
-              end
-
-              v.first_build = Integer(info[:dbSNPBuildID])
-
-              v.variation_class = info[:VC].presence
-
-              if (x = info[:CLNACC])
-                v.clinvar_accession = x.split(',').drop(1).map { |y| y == MISSING_VALUE ? nil : y }.map { |y| y.split('|') }
-              end
-
-              if (x = info[:FREQ])
-                hash = x.split('|').map { |y| y.split(':') }.to_h
-                hash.each do |k, v|
-                  hash[k] = v.split(',').drop(1).map { |y| y == MISSING_VALUE ? nil : Float(y) }
+              var.variation_class   = info[:VC].presence
+              var.first_build       = info[:dbSNPBuildID]&.yield_self(&Kernel.method(:Integer))
+              var.gene_id_list      = info[:GENEINFO]&.yield_self do |x|
+                x.split('|').map do |y|
+                  y.split(':')[1]&.yield_self(&Kernel.method(:Integer))
                 end
-                v.frequency = hash
+              end
+              var.clinvar_accession = info[:CLNACC]&.yield_self do |x|
+                x.split(',').drop(1).map { |y| y == MISSING_VALUE ? nil : y }.map { |y| y&.split('|') }
+              end
+              var.frequency         = info[:FREQ]&.yield_self do |freq|
+                freq.split('|').map { |y| y.split(':') }.map do |k, v|
+                  [k, v.split(',').drop(1).map { |y| y == MISSING_VALUE ? nil : Float(y) }]
+                end.to_h
               end
             end
           rescue => e

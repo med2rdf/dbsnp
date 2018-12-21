@@ -63,7 +63,9 @@ module DbSNP::RDF
           g << [subject, ::RDF.type, M2R.Variation]
           g << [subject, ::RDF.type, var_class2so(variation_class)]
           g << [subject, ::RDF::Vocab::DC.identifier, rs]
-          g << [subject, SNPO.is_created_in_build, first_build]
+          first_build.yield_self do |x|
+            g << [subject, SNPO.is_created_in_build, x]
+          end
           g << [subject, SNPO.is_updated_in_build, latest_build]
           g << [subject, M2R.reference_allele, reference_allele]
           gene_id_list&.each do |id|
