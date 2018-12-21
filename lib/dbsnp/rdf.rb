@@ -29,5 +29,3 @@ module DbSNP
     end
   end
 end
-
-
