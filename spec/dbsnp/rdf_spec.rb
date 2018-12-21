@@ -1,5 +1,5 @@
-RSpec.describe Dbsnp::RDF do
+RSpec.describe DbSNP::RDF do
   it 'has a version number' do
-    expect(Dbsnp::RDF::VERSION).not_to be nil
+    expect(DbSNP::RDF::VERSION).not_to be nil
   end
 end
