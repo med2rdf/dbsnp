@@ -18,7 +18,7 @@ module DbSNP::RDF
           exit 0
         end
 
-        ontology = ::RDF::Turtle::Writer.buffer(prefixes: PREFIXES) do |writer|
+        ontology = ::RDF::Turtle::Writer.buffer(prefixes: PREFIXES.merge(owl: ::RDF::OWL.to_s)) do |writer|
           SNPO.each_statement { |x| writer << x }
         end
 

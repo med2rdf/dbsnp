@@ -42,12 +42,12 @@ module DbSNP::RDF
          type:        ::RDF::OWL.Class,
          subClassOf:  M2R.Variation,
          isDefinedBy: to_s,
-         label:       to_s
+         label:       'Allele'
 
     # Property definitions
     property(:is_created_in_build,
              type:        ::RDF::OWL.DatatypeProperty,
-             label:       to_s,
+             label:       'is_created_in_build',
              isDefinedBy: to_s,
              domain:      M2R.Variation,
              range:       ::RDF::XSD.integer,
@@ -56,7 +56,7 @@ module DbSNP::RDF
 
     property(:is_updated_in_build,
              type:        ::RDF::OWL.DatatypeProperty,
-             label:       to_s,
+             label:       'is_updated_in_build',
              isDefinedBy: to_s,
              domain:      M2R.Variation,
              range:       ::RDF::XSD.integer,
