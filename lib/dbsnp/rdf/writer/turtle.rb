@@ -1,5 +1,6 @@
 require 'rdf'
-require 'rdf/raptor'
+# TODO: disable until solve memory exhaust
+# require 'rdf/raptor'
 require 'rdf/turtle'
 require 'zlib'
 
